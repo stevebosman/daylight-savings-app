@@ -6,6 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".FirstFragment">
 
+    <EditText
+        android:id="@+id/sunset"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:editable="false"
+        android:ems="10"
+        android:inputType="none"
+        app:layout_constraintBottom_toTopOf="@+id/textview_first"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.795"
+        tools:layout_editor_absoluteX="71dp" />
+
     <Button
         android:id="@+id/button_first"
         android:layout_width="wrap_content"
@@ -25,4 +37,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/sunrise"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:editable="false"
+        android:ems="10"
+        android:inputType="none"
+        app:layout_constraintBottom_toTopOf="@+id/textview_first"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.381"
+        tools:layout_editor_absoluteX="51dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

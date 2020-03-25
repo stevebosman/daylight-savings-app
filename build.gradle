@@ -20,7 +20,14 @@ allprojects {
     repositories {
         google()
         jcenter()
-        
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/stevebosman/sunrise-equation")
+            credentials {
+                username = System.getenv("GITHUB_USERNAME")
+                password = System.getenv("GITHUB_PUBLISH_TOKEN")
+            }
+        }
     }
 }
 
