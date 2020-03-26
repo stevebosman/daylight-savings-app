@@ -1,0 +1,7 @@
+<resources>
+    <declare-styleable name="DaylightView">
+        <attr name="sunrise" format="string" />
+        <attr name="date" format="string" />
+        <attr name="sunset" format="string" />
+    </declare-styleable>
+</resources>

@@ -11,4 +11,5 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="sunset_hint">Sunset</string>
     <string name="sunrise_hint">Sunrise</string>
+    <string name="date_hint">Date</string>
 </resources>
