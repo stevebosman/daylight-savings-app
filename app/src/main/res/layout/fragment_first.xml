@@ -7,47 +7,213 @@
     tools:context=".FirstFragment">
 
     <EditText
-        android:id="@+id/sunset"
-        android:layout_width="150dp"
+        android:id="@+id/sunrise1"
+        android:layout_width="100dp"
         android:layout_height="40dp"
-        android:editable="false"
         android:ems="10"
+        android:hint="@string/sunrise_hint"
         android:inputType="none"
-        app:layout_constraintBottom_toTopOf="@+id/textview_first"
+        android:editable="false"
+        app:layout_constraintEnd_toStartOf="@id/sunset1"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.795"
-        tools:layout_editor_absoluteX="71dp" />
-
-    <Button
-        android:id="@+id/button_first"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/next"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textview_first" />
-
-    <TextView
-        android:id="@+id/textview_first"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_first_fragment"
-        app:layout_constraintBottom_toTopOf="@id/button_first"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@id/sunrise2"
+        />
 
     <EditText
-        android:id="@+id/sunrise"
-        android:layout_width="150dp"
+        android:id="@+id/sunset1"
+        android:layout_width="100dp"
         android:layout_height="40dp"
-        android:editable="false"
         android:ems="10"
+        android:hint="@string/sunset_hint"
         android:inputType="none"
-        app:layout_constraintBottom_toTopOf="@+id/textview_first"
+        android:editable="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/sunrise1"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.381"
-        tools:layout_editor_absoluteX="51dp" />
+        app:layout_constraintBottom_toTopOf="@id/sunset2"
+        />
+
+    <EditText
+        android:id="@+id/sunrise2"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:ems="10"
+        android:hint="@string/sunrise_hint"
+        android:inputType="none"
+        android:editable="false"
+        app:layout_constraintEnd_toStartOf="@id/sunset2"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sunrise1"
+        app:layout_constraintBottom_toTopOf="@id/sunrise3"
+        />
+
+    <EditText
+        android:id="@+id/sunset2"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:ems="10"
+        android:hint="@string/sunset_hint"
+        android:inputType="none"
+        android:editable="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/sunrise2"
+        app:layout_constraintTop_toBottomOf="@id/sunset1"
+        app:layout_constraintBottom_toTopOf="@id/sunset3"
+        />
+
+    <EditText
+        android:id="@+id/sunrise3"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:ems="10"
+        android:hint="@string/sunrise_hint"
+        android:inputType="none"
+        android:editable="false"
+        app:layout_constraintEnd_toStartOf="@id/sunset3"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sunrise2"
+        app:layout_constraintBottom_toTopOf="@id/sunrise4"
+        />
+
+    <EditText
+        android:id="@+id/sunset3"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:ems="10"
+        android:hint="@string/sunset_hint"
+        android:inputType="none"
+        android:editable="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/sunrise3"
+        app:layout_constraintTop_toBottomOf="@id/sunset2"
+        app:layout_constraintBottom_toTopOf="@id/sunset4"
+        />
+
+    <EditText
+        android:id="@+id/sunrise4"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:ems="10"
+        android:hint="@string/sunrise_hint"
+        android:inputType="none"
+        android:editable="false"
+        app:layout_constraintEnd_toStartOf="@id/sunset4"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sunrise3"
+        app:layout_constraintBottom_toTopOf="@id/sunrise5"
+        />
+
+    <EditText
+        android:id="@+id/sunset4"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:ems="10"
+        android:hint="@string/sunset_hint"
+        android:inputType="none"
+        android:editable="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/sunrise4"
+        app:layout_constraintTop_toBottomOf="@id/sunset3"
+        app:layout_constraintBottom_toTopOf="@id/sunset5"
+        />
+
+    <EditText
+        android:id="@+id/sunrise5"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:ems="10"
+        android:hint="@string/sunrise_hint"
+        android:inputType="none"
+        android:editable="false"
+        app:layout_constraintEnd_toStartOf="@id/sunset5"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sunrise4"
+        app:layout_constraintBottom_toTopOf="@id/sunrise6"
+        />
+
+    <EditText
+        android:id="@+id/sunset5"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:ems="10"
+        android:hint="@string/sunset_hint"
+        android:inputType="none"
+        android:editable="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/sunrise5"
+        app:layout_constraintTop_toBottomOf="@id/sunset4"
+        app:layout_constraintBottom_toTopOf="@id/sunset6"
+        />
+
+    <EditText
+        android:id="@+id/sunrise6"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:ems="10"
+        android:hint="@string/sunrise_hint"
+        android:inputType="none"
+        android:editable="false"
+        app:layout_constraintEnd_toStartOf="@id/sunset6"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sunrise5"
+        app:layout_constraintBottom_toTopOf="@id/sunrise7"
+        />
+
+    <EditText
+        android:id="@+id/sunset6"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:ems="10"
+        android:hint="@string/sunset_hint"
+        android:inputType="none"
+        android:editable="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/sunrise6"
+        app:layout_constraintTop_toBottomOf="@id/sunset5"
+        app:layout_constraintBottom_toTopOf="@id/sunset7"
+        />
+
+    <EditText
+        android:id="@+id/sunrise7"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:ems="10"
+        android:hint="@string/sunrise_hint"
+        android:inputType="none"
+        android:editable="false"
+        app:layout_constraintEnd_toStartOf="@id/sunset7"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sunrise6"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+    <EditText
+        android:id="@+id/sunset7"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:ems="10"
+        android:hint="@string/sunset_hint"
+        android:inputType="none"
+        android:editable="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/sunrise7"
+        app:layout_constraintTop_toBottomOf="@id/sunset6"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

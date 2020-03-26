@@ -12,6 +12,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -134,11 +135,28 @@ class MainActivity : AppCompatActivity() {
     private fun setSunriseSunset(location: Location) {
         val latitude: Angle = Angle.fromDegrees(location.latitude)
         val longitude: Angle = Angle.fromDegrees(location.longitude)
+        val today = ZonedDateTime.now()
+        populateSunriseSunset(today, latitude, longitude, sunrise1, sunset1)
+        populateSunriseSunset(today.plusDays(1), latitude, longitude, sunrise2, sunset2)
+        populateSunriseSunset(today.plusDays(2), latitude, longitude, sunrise3, sunset3)
+        populateSunriseSunset(today.plusDays(3), latitude, longitude, sunrise4, sunset4)
+        populateSunriseSunset(today.plusDays(4), latitude, longitude, sunrise5, sunset5)
+        populateSunriseSunset(today.plusDays(5), latitude, longitude, sunrise6, sunset6)
+        populateSunriseSunset(today.plusDays(6), latitude, longitude, sunrise7, sunset7)
+    }
+
+    private fun populateSunriseSunset(
+        time: ZonedDateTime,
+        latitude: Angle,
+        longitude: Angle,
+        sunrise: EditText,
+        sunset: EditText
+    ) {
         val sunsetTime =
-            calculateSunriseSetTime(false, ZonedDateTime.now(), latitude, longitude)
+            calculateSunriseSetTime(false, time, latitude, longitude)
         sunset.setText(sunsetTime.toLocalTime().toString())
         val sunriseTime =
-            calculateSunriseSetTime(true, ZonedDateTime.now(), latitude, longitude)
+            calculateSunriseSetTime(true, time, latitude, longitude)
         sunrise.setText(sunriseTime.toLocalTime().toString())
     }
 }
