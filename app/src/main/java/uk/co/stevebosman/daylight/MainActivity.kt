@@ -22,6 +22,10 @@ import uk.co.stevebosman.angles.Angle
 import uk.co.stevebosman.sunrise.calculateSunriseSetTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.time.temporal.ChronoUnit
+import kotlin.math.abs
+
 
 class MainActivity : AppCompatActivity() {
     private val permissionId: Int = 15169
@@ -86,7 +90,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkPermissions(): Boolean {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             return true
         }
         return false
@@ -100,7 +108,11 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         if (requestCode == permissionId) {
             @Suppress("ControlFlowWithEmptyBody")
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
@@ -110,7 +122,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isLocationEnabled(): Boolean {
-        val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationManager: LocationManager =
+            getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
             LocationManager.NETWORK_PROVIDER
         )
@@ -135,7 +148,7 @@ class MainActivity : AppCompatActivity() {
     private fun setSunriseSunset(location: Location) {
         val latitude: Angle = Angle.fromDegrees(location.latitude)
         val longitude: Angle = Angle.fromDegrees(location.longitude)
-        val today = ZonedDateTime.now()
+        val today = ZonedDateTime.now().minusDays(4)
         populateSunriseSunset(today, latitude, longitude, daylight1)
         populateSunriseSunset(today.plusDays(1), latitude, longitude, daylight2)
         populateSunriseSunset(today.plusDays(2), latitude, longitude, daylight3)
@@ -151,12 +164,21 @@ class MainActivity : AppCompatActivity() {
         longitude: Angle,
         daylight: DaylightView
     ) {
-        daylight.date = time.format(DateTimeFormatter.ofPattern("dd/MMM/yyyy"))
+        daylight.date = time.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
         val sunsetTime =
             calculateSunriseSetTime(false, time, latitude, longitude)
-        daylight.sunset = sunsetTime.toLocalTime().toString()
         val sunriseTime =
             calculateSunriseSetTime(true, time, latitude, longitude)
-        daylight.sunrise = sunriseTime.toLocalTime().toString()
+        val between = abs(ChronoUnit.SECONDS.between(sunriseTime, sunsetTime))
+        println("sunrise: $sunriseTime")
+        println("sunset: $sunsetTime")
+        println("seconds: $between")
+        if (between > 86400) {
+            daylight.sunset = getString(R.string.no_sunset)
+            daylight.sunrise = getString(R.string.no_sunrise)
+        } else {
+            daylight.sunset = sunsetTime.toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME)
+            daylight.sunrise = sunriseTime.toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME)
+        }
     }
 }

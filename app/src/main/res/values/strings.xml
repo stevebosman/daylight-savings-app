@@ -12,4 +12,6 @@
     <string name="sunset_hint">Sunset</string>
     <string name="sunrise_hint">Sunrise</string>
     <string name="date_hint">Date</string>
+    <string name="no_sunset">No Sunset</string>
+    <string name="no_sunrise">No Sunrise</string>
 </resources>
