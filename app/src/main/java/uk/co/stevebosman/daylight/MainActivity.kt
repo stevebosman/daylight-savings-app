@@ -19,12 +19,11 @@ import com.google.android.gms.location.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_first.*
 import uk.co.stevebosman.angles.Angle
-import uk.co.stevebosman.sunrise.calculateSunriseSetTime
+import uk.co.stevebosman.sunrise.DaylightType
+import uk.co.stevebosman.sunrise.calculateSunriseDetails
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.time.temporal.ChronoUnit
-import kotlin.math.abs
 
 
 class MainActivity : AppCompatActivity() {
@@ -148,37 +147,39 @@ class MainActivity : AppCompatActivity() {
     private fun setSunriseSunset(location: Location) {
         val latitude: Angle = Angle.fromDegrees(location.latitude)
         val longitude: Angle = Angle.fromDegrees(location.longitude)
-        val today = ZonedDateTime.now().minusDays(4)
-        populateSunriseSunset(today, latitude, longitude, daylight1)
-        populateSunriseSunset(today.plusDays(1), latitude, longitude, daylight2)
-        populateSunriseSunset(today.plusDays(2), latitude, longitude, daylight3)
-        populateSunriseSunset(today.plusDays(3), latitude, longitude, daylight4)
-        populateSunriseSunset(today.plusDays(4), latitude, longitude, daylight5)
-        populateSunriseSunset(today.plusDays(5), latitude, longitude, daylight6)
-        populateSunriseSunset(today.plusDays(6), latitude, longitude, daylight7)
+        val today = ZonedDateTime.now()
+        populateSunriseSunset(today, longitude, latitude, daylight1)
+        populateSunriseSunset(today.plusDays(1), longitude, latitude, daylight2)
+        populateSunriseSunset(today.plusDays(2), longitude, latitude, daylight3)
+        populateSunriseSunset(today.plusDays(3), longitude, latitude, daylight4)
+        populateSunriseSunset(today.plusDays(4), longitude, latitude, daylight5)
+        populateSunriseSunset(today.plusDays(5), longitude, latitude, daylight6)
+        populateSunriseSunset(today.plusDays(6), longitude, latitude, daylight7)
     }
 
     private fun populateSunriseSunset(
         time: ZonedDateTime,
-        latitude: Angle,
         longitude: Angle,
+        latitude: Angle,
         daylight: DaylightView
     ) {
         daylight.date = time.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
-        val sunsetTime =
-            calculateSunriseSetTime(false, time, latitude, longitude)
-        val sunriseTime =
-            calculateSunriseSetTime(true, time, latitude, longitude)
-        val between = abs(ChronoUnit.SECONDS.between(sunriseTime, sunsetTime))
-        println("sunrise: $sunriseTime")
-        println("sunset: $sunsetTime")
-        println("seconds: $between")
-        if (between > 86400) {
-            daylight.sunset = getString(R.string.no_sunset)
-            daylight.sunrise = getString(R.string.no_sunrise)
+        val sunriseDetails =
+            calculateSunriseDetails(time, longitude, latitude)
+        println("*****")
+        println("Noon: ${sunriseDetails.solarNoonTime}")
+        println("Sunrise: ${sunriseDetails.sunriseTime}")
+        println("Sunset: ${sunriseDetails.sunsetTime}")
+
+        if (sunriseDetails.daylightType==DaylightType.POLAR_NIGHT) {
+            daylight.sunset = getString(R.string.polar_night)
+            daylight.sunrise = getString(R.string.polar_night)
+        } else if (sunriseDetails.daylightType==DaylightType.MIDNIGHT_SUN) {
+            daylight.sunset = getString(R.string.midnight_sun)
+            daylight.sunrise = getString(R.string.midnight_sun)
         } else {
-            daylight.sunset = sunsetTime.toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME)
-            daylight.sunrise = sunriseTime.toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME)
+            daylight.sunset = sunriseDetails.sunsetTime.toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME)
+            daylight.sunrise = sunriseDetails.sunriseTime.toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME)
         }
     }
 }
