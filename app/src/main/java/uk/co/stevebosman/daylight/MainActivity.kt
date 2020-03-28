@@ -139,9 +139,24 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings -> {
+                showSettings()
+                true
+            }
+            R.id.action_about -> {
+                showAbout()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    fun showSettings() {
+        startActivity(Intent(this, SettingsActivity::class.java))
+    }
+
+    fun showAbout() {
+        startActivity(Intent(this, AboutActivity::class.java))
     }
 
     private fun setSunriseSunset(location: Location) {
