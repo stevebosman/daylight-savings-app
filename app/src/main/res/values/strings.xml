@@ -17,18 +17,15 @@
     <string name="polar_night">Polar Night</string>
     <string name="title_activity_settings">Settings</string>
 
-    <!-- Preference Titles -->
+    <!-- START Preferences -->
+    <string name="daytime_header">Daytime</string>
+    <string name="sleep_type_title">Sleep Type</string>
     <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
+    <string name="alarm_header">Alarm</string>
+    <string name="alarms_title">Alarms</string>
+    <string name="alarms_on_summary">Alarms enabled</string>
+    <string name="alarms_off_summary">Alarms disabled</string>
+    <string name="copyright_text">© Steve Bosman 2020</string>
+    <!-- END Preferences -->
 
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
 </resources>

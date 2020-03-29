@@ -1,35 +1,21 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="@string/messages_header">
-
-        <EditTextPreference
-            app:key="signature"
-            app:title="@string/signature_title"
-            app:useSimpleSummaryProvider="true" />
-
+    <PreferenceCategory app:title="@string/daytime_header">
         <ListPreference
             app:defaultValue="reply"
-            app:entries="@array/reply_entries"
-            app:entryValues="@array/reply_values"
+            app:entries="@array/sleep_type_entries"
+            app:entryValues="@array/sleep_type_values"
             app:key="reply"
-            app:title="@string/reply_title"
+            app:title="@string/sleep_type_title"
             app:useSimpleSummaryProvider="true" />
-
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/sync_header">
-
+    <PreferenceCategory app:title="@string/alarm_header">
         <SwitchPreferenceCompat
-            app:key="sync"
-            app:title="@string/sync_title" />
-
-        <SwitchPreferenceCompat
-            app:dependency="sync"
-            app:key="attachment"
-            app:summaryOff="@string/attachment_summary_off"
-            app:summaryOn="@string/attachment_summary_on"
-            app:title="@string/attachment_title" />
-
+            app:key="alarms"
+            app:summaryOff="@string/alarms_off_summary"
+            app:summaryOn="@string/alarms_on_summary"
+            app:title="@string/alarms_title" />
     </PreferenceCategory>
 
 </PreferenceScreen>

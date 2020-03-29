@@ -15,6 +15,10 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    applicationVariants.all { variant ->
+        variant.resValue "string", "version_text", "Version: " + variant.versionName
+        variant.resValue "string", "application_name", "Daylight"
+    }
 
     buildTypes {
         release {
