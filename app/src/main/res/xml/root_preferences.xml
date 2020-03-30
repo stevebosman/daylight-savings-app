@@ -1,4 +1,5 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory app:title="@string/daytime_header">
         <ListPreference
@@ -8,6 +9,28 @@
             app:key="reply"
             app:title="@string/sleep_type_title"
             app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+            android:defaultValue="8"
+            android:key="sleep_duration"
+            android:summary="@string/sleep_duration_summary"
+            android:title="@string/sleep_duration"
+            android:inputType="numberDecimal"
+            app:useSimpleSummaryProvider="true"
+            />
+        <uk.co.stevebosman.daylight.TimePreference
+            android:defaultValue="08:00"
+            android:key="latest_wakeup_time"
+            android:summary="@string/latest_wakeup_time_summary"
+            android:title="@string/latest_wakeup_time"
+            app:useSimpleSummaryProvider="true"
+            />
+        <uk.co.stevebosman.daylight.TimePreference
+            android:defaultValue="21:00"
+            android:key="earliest_sleep_time"
+            android:summary="@string/earliest_sleep_time_summary"
+            android:title="@string/earliest_sleep_time"
+            app:useSimpleSummaryProvider="true"
+            />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/alarm_header">

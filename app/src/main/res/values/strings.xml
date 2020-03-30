@@ -26,6 +26,12 @@
     <string name="alarms_on_summary">Alarms enabled</string>
     <string name="alarms_off_summary">Alarms disabled</string>
     <string name="copyright_text">© Steve Bosman 2020</string>
+    <string name="earliest_sleep_time">Earliest Sleep Time</string>
+    <string name="earliest_sleep_time_summary">Set your desired earliest sleep time</string>
+    <string name="sleep_duration">Sleep Duration</string>
+    <string name="sleep_duration_summary">Set how many hours you want to sleep for</string>
+    <string name="latest_wakeup_time">Latest Wakeup Time</string>
+    <string name="latest_wakeup_time_summary">Set your desired latest wakeup time</string>
     <!-- END Preferences -->
 
 </resources>
