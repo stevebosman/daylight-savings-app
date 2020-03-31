@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import uk.co.stevebosman.timepreference.TimeDialog
+import uk.co.stevebosman.timepreference.TimePreference
 
 class SettingsActivity : AppCompatActivity() {
 
