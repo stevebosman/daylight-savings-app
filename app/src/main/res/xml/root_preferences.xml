@@ -3,27 +3,30 @@
 
     <PreferenceCategory app:title="@string/daytime_header">
         <ListPreference
-            app:defaultValue="reply"
+            android:id="@+id/sleep_type_entries"
+            app:defaultValue="lark"
             app:entries="@array/sleep_type_entries"
             app:entryValues="@array/sleep_type_values"
             app:key="reply"
             app:title="@string/sleep_type_title"
             app:useSimpleSummaryProvider="true" />
         <EditTextPreference
+            android:id="@+id/sleep_duration"
             android:defaultValue="8"
+            android:inputType="numberDecimal"
             android:key="sleep_duration"
             android:summary="@string/sleep_duration_summary"
             android:title="@string/sleep_duration"
-            android:inputType="numberDecimal"
-            app:useSimpleSummaryProvider="true"
-            />
+            app:useSimpleSummaryProvider="true" />
         <uk.co.stevebosman.timepreference.TimePreference
+            android:id="@+id/latest_wakeup_time"
             android:defaultValue="08:00"
             android:key="latest_wakeup_time"
             android:summary="@string/latest_wakeup_time_summary"
             android:title="@string/latest_wakeup_time"
             app:useSimpleSummaryProvider="true" />
         <uk.co.stevebosman.timepreference.TimePreference
+            android:id="@+id/earliest_sleep_time"
             android:defaultValue="21:00"
             android:key="earliest_sleep_time"
             android:summary="@string/earliest_sleep_time_summary"
