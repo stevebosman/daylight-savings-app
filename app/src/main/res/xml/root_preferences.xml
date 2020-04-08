@@ -2,33 +2,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory app:title="@string/daytime_header">
-        <ListPreference
-            android:id="@+id/sleep_type_entries"
-            app:defaultValue="lark"
-            app:entries="@array/sleep_type_entries"
-            app:entryValues="@array/sleep_type_values"
-            app:key="reply"
-            app:title="@string/sleep_type_title"
-            app:useSimpleSummaryProvider="true" />
         <EditTextPreference
             android:id="@+id/sleep_duration"
-            android:defaultValue="8"
+            android:defaultValue="@string/default_sleep_duration"
             android:inputType="numberDecimal"
-            android:key="sleep_duration"
+            android:key="@string/preference_sleep_duration"
             android:summary="@string/sleep_duration_summary"
             android:title="@string/sleep_duration"
             app:useSimpleSummaryProvider="true" />
         <uk.co.stevebosman.timepreference.TimePreference
             android:id="@+id/latest_wakeup_time"
-            android:defaultValue="08:00"
-            android:key="latest_wakeup_time"
+            android:defaultValue="@string/default_latest_wakeup_time"
+            android:key="@string/preference_latest_wakeup_time"
             android:summary="@string/latest_wakeup_time_summary"
             android:title="@string/latest_wakeup_time"
             app:useSimpleSummaryProvider="true" />
         <uk.co.stevebosman.timepreference.TimePreference
             android:id="@+id/earliest_sleep_time"
-            android:defaultValue="21:00"
-            android:key="earliest_sleep_time"
+            android:defaultValue="@string/default_earliest_sleep_time"
+            android:key="@string/preference_earliest_sleep_time"
             android:summary="@string/earliest_sleep_time_summary"
             android:title="@string/earliest_sleep_time"
             app:useSimpleSummaryProvider="true"
@@ -37,7 +29,8 @@
 
     <PreferenceCategory app:title="@string/alarm_header">
         <SwitchPreferenceCompat
-            app:key="alarms"
+            android:id="@+id/allow_alarms"
+            app:key="@string/preference_allow_alarms"
             app:summaryOff="@string/alarms_off_summary"
             app:summaryOn="@string/alarms_on_summary"
             app:title="@string/alarms_title" />

@@ -19,7 +19,6 @@
 
     <!-- START Preferences -->
     <string name="daytime_header">Daytime</string>
-    <string name="sleep_type_title">Sleep Type</string>
     <string name="messages_header">Messages</string>
     <string name="alarm_header">Alarm</string>
     <string name="alarms_title">Alarms</string>
@@ -32,6 +31,13 @@
     <string name="sleep_duration_summary">Set how many hours you want to sleep for</string>
     <string name="latest_wakeup_time">Latest Wakeup Time</string>
     <string name="latest_wakeup_time_summary">Set your desired latest wakeup time</string>
+    <string name="preference_sleep_duration">sleep_duration</string>
+    <string name="preference_latest_wakeup_time">latest_wakeup_time</string>
+    <string name="preference_earliest_sleep_time">earliest_sleep_time</string>
+    <string name="preference_allow_alarms">allow_alarms</string>
+    <string name="default_sleep_duration">8</string>
+    <string name="default_earliest_sleep_time">21:00</string>
+    <string name="default_latest_wakeup_time">08:00</string>
     <!-- END Preferences -->
 
 </resources>

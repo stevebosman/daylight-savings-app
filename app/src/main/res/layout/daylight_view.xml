@@ -12,7 +12,7 @@
         android:ems="10"
         android:hint="@string/sunrise_hint"
         android:inputType="none"
-        android:textAlignment="textStart"
+        android:textAlignment="textEnd"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/dateView"
