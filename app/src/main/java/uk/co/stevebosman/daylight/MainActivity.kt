@@ -181,7 +181,7 @@ class MainActivity : AppCompatActivity() {
                     longitude,
                     latitude
                 )
-            );
+            )
         }
 
         val preferences = Preferences(this)
@@ -245,6 +245,7 @@ class MainActivity : AppCompatActivity() {
     private val waxingGibbousMoon = "\uD83C\uDF16"
     private val lastQuarterMoon = "\uD83C\uDF17"
     private val waxingCrescentMoon = "\uD83C\uDF18"
+    private val moonPhases = arrayOf(newMoon, crescentMoon, quarterMoon, gibbousMoon, fullMoon, waxingGibbousMoon, lastQuarterMoon, waxingCrescentMoon)
 
     private fun populateSunriseSunset(
         yesterday: SunriseDetails,
@@ -302,11 +303,12 @@ class MainActivity : AppCompatActivity() {
                 DaylightType.POLAR_NIGHT -> getString(R.string.polar_night)
                 else -> sun + today.sunriseTime.format(DateTimeFormatter.ISO_LOCAL_TIME)
             } + "\n" + wakeUp.toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME)
+
         daylight.sunset =
             when(today.daylightType) {
                 DaylightType.MIDNIGHT_SUN -> getString(R.string.midnight_sun)
                 DaylightType.POLAR_NIGHT -> getString(R.string.polar_night)
-                else -> crescentMoon + today.sunsetTime.format(DateTimeFormatter.ISO_LOCAL_TIME)
+                else -> moonPhases[(today.moonPhase * 8+0.5).toInt()%8] + today.sunsetTime.format(DateTimeFormatter.ISO_LOCAL_TIME)
             } + "\n" + sleep.toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME)
     }
 
