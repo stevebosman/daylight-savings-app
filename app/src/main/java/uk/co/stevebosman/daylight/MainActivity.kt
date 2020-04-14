@@ -324,14 +324,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun calculateEarliestSleepTime(
-        today: SunriseDetails,
+        sunriseDetails: SunriseDetails,
         preferences: Preferences
-    ) = today.solarNoonTime.withHour(preferences.earliestSleepTimeHours)
-        .withMinute(preferences.earliestSleepTimeMinutes).truncatedTo(ChronoUnit.MINUTES)
+    ): ZonedDateTime {
+        val earliestSleepTime = sunriseDetails.solarNoonTime.withHour(preferences.earliestSleepTimeHours)
+            .withMinute(preferences.earliestSleepTimeMinutes).truncatedTo(ChronoUnit.MINUTES)
+        return if (sunriseDetails.sunsetTime.isAfter(earliestSleepTime)) sunriseDetails.sunsetTime else earliestSleepTime
+    }
 
     private fun calculateLatestWakeupTime(
-        today: SunriseDetails,
+        sunriseDetails: SunriseDetails,
         preferences: Preferences
-    ) = today.solarNoonTime.withHour(preferences.latestWakeupTimeHours)
+    ) = sunriseDetails.solarNoonTime.withHour(preferences.latestWakeupTimeHours)
         .withMinute(preferences.latestWakeupTimeMinutes).truncatedTo(ChronoUnit.MINUTES)
 }
