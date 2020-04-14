@@ -7,28 +7,28 @@
 
     <TextView
         android:id="@+id/sunriseView"
-        android:layout_width="100dp"
-        android:layout_height="40dp"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
         android:ems="10"
         android:hint="@string/sunrise_hint"
         android:inputType="none"
-        android:textAlignment="textEnd"
+        android:textAlignment="textStart"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/dateView"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/dateView"
-        android:layout_width="90dp"
-        android:layout_height="40dp"
+        android:layout_width="160dp"
+        android:layout_height="match_parent"
         android:ems="10"
         android:hint="@string/date_hint"
         android:inputType="none"
         android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/sunsetView"
         app:layout_constraintStart_toEndOf="@id/sunriseView"
@@ -36,8 +36,8 @@
 
     <TextView
         android:id="@+id/sunsetView"
-        android:layout_width="100dp"
-        android:layout_height="40dp"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
         android:ems="10"
         android:hint="@string/sunset_hint"
         android:inputType="none"

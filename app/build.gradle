@@ -17,7 +17,7 @@ android {
     }
     applicationVariants.all { variant ->
         variant.resValue "string", "version_text", "Version: " + variant.versionName
-        variant.resValue "string", "application_name", "Daylight"
+        variant.resValue "string", "application_name", "True Daylight Savings"
     }
 
     buildTypes {

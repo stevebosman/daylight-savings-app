@@ -34,12 +34,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        this.title = resources.getString(R.string.app_name)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-
-        fab.setOnClickListener { _ ->
-            requestNewLocationData()
-        }
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         getLastLocation()
@@ -143,6 +140,10 @@ class MainActivity : AppCompatActivity() {
                 showSettings()
                 true
             }
+            R.id.action_refresh -> {
+                requestNewLocationData()
+                true
+            }
             R.id.action_about -> {
                 showAbout()
                 true
@@ -153,7 +154,7 @@ class MainActivity : AppCompatActivity() {
 
     private val settingsActivity = 123
 
-    fun showSettings() {
+    private fun showSettings() {
         startActivityForResult(Intent(this, SettingsActivity::class.java), settingsActivity)
     }
 
@@ -164,7 +165,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun showAbout() {
+    private fun showAbout() {
         startActivity(Intent(this, AboutActivity::class.java))
     }
 
@@ -186,57 +187,59 @@ class MainActivity : AppCompatActivity() {
 
         val preferences = Preferences(this)
         populateSunriseSunset(
-            sunriseDetails.get(0),
-            sunriseDetails.get(1),
-            sunriseDetails.get(2),
+            sunriseDetails[0],
+            sunriseDetails[1],
+            sunriseDetails[2],
             preferences,
             daylight1
         )
         populateSunriseSunset(
-            sunriseDetails.get(1),
-            sunriseDetails.get(2),
-            sunriseDetails.get(3),
+            sunriseDetails[1],
+            sunriseDetails[2],
+            sunriseDetails[3],
             preferences,
             daylight2
         )
         populateSunriseSunset(
-            sunriseDetails.get(2),
-            sunriseDetails.get(3),
-            sunriseDetails.get(4),
+            sunriseDetails[2],
+            sunriseDetails[3],
+            sunriseDetails[4],
             preferences,
             daylight3
         )
         populateSunriseSunset(
-            sunriseDetails.get(3),
-            sunriseDetails.get(4),
-            sunriseDetails.get(5),
+            sunriseDetails[3],
+            sunriseDetails[4],
+            sunriseDetails[5],
             preferences,
             daylight4
         )
         populateSunriseSunset(
-            sunriseDetails.get(4),
-            sunriseDetails.get(5),
-            sunriseDetails.get(6),
+            sunriseDetails[4],
+            sunriseDetails[5],
+            sunriseDetails[6],
             preferences,
             daylight5
         )
         populateSunriseSunset(
-            sunriseDetails.get(5),
-            sunriseDetails.get(6),
-            sunriseDetails.get(7),
+            sunriseDetails[5],
+            sunriseDetails[6],
+            sunriseDetails[7],
             preferences,
             daylight6
         )
         populateSunriseSunset(
-            sunriseDetails.get(6),
-            sunriseDetails.get(7),
-            sunriseDetails.get(8),
+            sunriseDetails[6],
+            sunriseDetails[7],
+            sunriseDetails[8],
             preferences,
             daylight7
         )
     }
 
-    private val sun = "☀"
+    private val alarmClockIcon = "\u23f0"
+    private val sleepIcon = "\uD83D\uDCA4"
+    private val sunriseIcon = "\uD83C\uDF05"
     private val newMoon = "\uD83C\uDF11"
     private val crescentMoon = "\uD83C\uDF12"
     private val quarterMoon = "\uD83C\uDF13"
@@ -245,7 +248,7 @@ class MainActivity : AppCompatActivity() {
     private val waxingGibbousMoon = "\uD83C\uDF16"
     private val lastQuarterMoon = "\uD83C\uDF17"
     private val waxingCrescentMoon = "\uD83C\uDF18"
-    private val moonPhases = arrayOf(newMoon, crescentMoon, quarterMoon, gibbousMoon, fullMoon, waxingGibbousMoon, lastQuarterMoon, waxingCrescentMoon)
+    private val moonPhaseIcons = arrayOf(newMoon, crescentMoon, quarterMoon, gibbousMoon, fullMoon, waxingGibbousMoon, lastQuarterMoon, waxingCrescentMoon)
 
     private fun populateSunriseSunset(
         yesterday: SunriseDetails,
@@ -255,7 +258,7 @@ class MainActivity : AppCompatActivity() {
         daylight: DaylightView
     ) {
         daylight.date =
-            today.solarNoonTime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
+            today.solarNoonTime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL))
         println("*****")
         println("Noon: ${today.solarNoonTime}")
         println("Sunrise: ${today.sunriseTime}")
@@ -301,19 +304,23 @@ class MainActivity : AppCompatActivity() {
             when(today.daylightType) {
                 DaylightType.MIDNIGHT_SUN -> getString(R.string.midnight_sun)
                 DaylightType.POLAR_NIGHT -> getString(R.string.polar_night)
-                else -> sun + today.sunriseTime.format(DateTimeFormatter.ISO_LOCAL_TIME)
-            } + "\n" + wakeUp.toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME)
+                else -> sunriseIcon + formatTime(today.sunriseTime)
+            } + "\n" + alarmClockIcon + formatTime(wakeUp)
 
         daylight.sunset =
             when(today.daylightType) {
                 DaylightType.MIDNIGHT_SUN -> getString(R.string.midnight_sun)
                 DaylightType.POLAR_NIGHT -> getString(R.string.polar_night)
-                else -> moonPhases[(today.moonPhase * 8+0.5).toInt()%8] + today.sunsetTime.format(DateTimeFormatter.ISO_LOCAL_TIME)
-            } + "\n" + sleep.toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME)
+                else -> moonPhaseIcons[(today.moonPhase * 8+0.5).toInt()%8] + formatTime(today.sunsetTime)
+            } + "\n" + sleepIcon + formatTime(sleep)
+    }
+
+    private fun formatTime(date: ZonedDateTime): String {
+        return date.toLocalTime().plusSeconds(30).truncatedTo(ChronoUnit.MINUTES).format(DateTimeFormatter.ofPattern("HH:mm"))
     }
 
     private fun earliest(date1: ZonedDateTime, date2: ZonedDateTime): ZonedDateTime {
-        if (date1.isBefore(date2)) return date1 else return date2
+        return if (date1.isBefore(date2)) date1 else date2
     }
 
     private fun calculateEarliestSleepTime(

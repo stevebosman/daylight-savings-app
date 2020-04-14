@@ -8,9 +8,11 @@
 
     <uk.co.stevebosman.daylight.DaylightView
         android:id="@+id/daylight1"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
         android:layout_margin="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintBottom_toTopOf="@id/daylight2"
         app:layout_constraintTop_toTopOf="parent"
@@ -18,7 +20,7 @@
     <uk.co.stevebosman.daylight.DaylightView
         android:id="@+id/daylight2"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:layout_margin="10dp"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
@@ -29,7 +31,7 @@
     <uk.co.stevebosman.daylight.DaylightView
         android:id="@+id/daylight3"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:layout_margin="10dp"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,7 +42,7 @@
     <uk.co.stevebosman.daylight.DaylightView
         android:id="@+id/daylight4"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:layout_margin="10dp"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,7 +53,7 @@
     <uk.co.stevebosman.daylight.DaylightView
         android:id="@+id/daylight5"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:layout_margin="20dp"
         app:layout_constraintStart_toEndOf="@id/daylight2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -61,7 +63,7 @@
     <uk.co.stevebosman.daylight.DaylightView
         android:id="@+id/daylight6"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:layout_margin="20dp"
         app:layout_constraintStart_toEndOf="@id/daylight3"
         app:layout_constraintEnd_toEndOf="parent"
@@ -71,7 +73,7 @@
     <uk.co.stevebosman.daylight.DaylightView
         android:id="@+id/daylight7"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:layout_margin="20dp"
         app:layout_constraintStart_toEndOf="@id/daylight4"
         app:layout_constraintEnd_toEndOf="parent"
