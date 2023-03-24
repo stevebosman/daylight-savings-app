@@ -2,14 +2,20 @@ package uk.co.stevebosman.daylight
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
-import kotlinx.android.synthetic.main.daylight_view.view.*
+import uk.co.stevebosman.daylight.databinding.DaylightViewBinding
 
 
 /**
  * Custom View to display date, alongside sunrise and sunset times.
  */
 class DaylightView : ConstraintLayout {
+    private val binding: DaylightViewBinding
+    init {
+        val layoutInflater: LayoutInflater = LayoutInflater.from(context)
+        binding = DaylightViewBinding.inflate(layoutInflater, this)
+    }
 
     private var _sunrise: String? = null
     private var _sunset: String? = null
@@ -22,19 +28,19 @@ class DaylightView : ConstraintLayout {
         get() = _sunrise
         set(value) {
             _sunrise = value
-            sunriseView.setText(value)
+            binding.sunriseView.text = value
         }
     var sunset: String?
         get() = _sunset
         set(value) {
             _sunset = value
-            sunsetView.setText(value)
+            binding.sunsetView.text = value
         }
     var date: String?
         get() = _date
         set(value) {
             _date = value
-            dateView.setText(value)
+            binding.dateView.text = value
         }
 
     constructor(context: Context) : super(context) {

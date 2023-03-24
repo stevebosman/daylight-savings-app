@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_short_name">True DST</string>
-    <string name="app_name">True Daylight Savings</string>
+    <string name="app_short_name">Perpetual DST</string>
+    <string name="application_name">Perpetual Daylight Savings</string>
+    <string name="version_text">1.0.0</string>
     <string name="action_settings">Settings</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_about">About</string>
@@ -10,11 +11,6 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="sunset_hint">Sunset</string>
-    <string name="sunrise_hint">Sunrise</string>
-    <string name="date_hint">Date</string>
     <string name="midnight_sun">Midnight Sun</string>
     <string name="polar_night">Polar Night</string>
     <string name="title_activity_settings">Settings</string>
@@ -26,7 +22,7 @@
     <string name="alarms_title">Alarms</string>
     <string name="alarms_on_summary">Alarms enabled</string>
     <string name="alarms_off_summary">Alarms disabled</string>
-    <string name="copyright_text">© Steve Bosman 2020</string>
+    <string name="copyright_text">© Steve Bosman 2020&#8211;2023</string>
     <string name="earliest_sleep_time">Earliest Sleep Time</string>
     <string name="earliest_sleep_time_summary">Set your desired earliest sleep time</string>
     <string name="sleep_duration">Sleep Duration</string>

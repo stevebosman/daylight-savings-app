@@ -25,23 +25,23 @@ class SettingsActivity : AppCompatActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
         }
-        private val DIALOG_FRAGMENT_TAG = "CustomPreference"
+        private val dialogFragmentTag = "CustomPreference"
 
         override fun onDisplayPreferenceDialog(preference: Preference) {
-            if (parentFragmentManager.findFragmentByTag(DIALOG_FRAGMENT_TAG) != null) {
+            if (parentFragmentManager.findFragmentByTag(dialogFragmentTag) != null) {
                 return
             }
             if (preference is TimePreference) {
                 val f: DialogFragment = TimeDialog(preference.getKey())
                 f.setTargetFragment(this, 0)
-                f.show(parentFragmentManager, DIALOG_FRAGMENT_TAG)
+                f.show(parentFragmentManager, dialogFragmentTag)
             } else {
                 super.onDisplayPreferenceDialog(preference)
             }
         }    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.getItemId()) {
+        when (item.itemId) {
             android.R.id.home -> {
                 super.onBackPressed()
                 return true

@@ -1,2 +1,28 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/stevebosman/sunrise-equation")
+            credentials {
+                username = user
+                password = key
+            }
+        }
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/stevebosman/timepreference")
+        }
+    }
+}
 rootProject.name='Daylight'
 include ':app'
