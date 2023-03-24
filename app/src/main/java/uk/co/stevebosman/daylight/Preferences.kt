@@ -4,14 +4,14 @@ import android.content.Context
 import android.preference.PreferenceManager
 
 class Preferences(context: Context) {
-    val allowAlarms: Boolean
+    private val allowAlarms: Boolean
     val latestWakeupTimeHours: Int
     val latestWakeupTimeMinutes: Int
     val earliestSleepTimeHours: Int
     val earliestSleepTimeMinutes: Int
     val sleepDurationMinutes: Long
     init {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         allowAlarms = sharedPreferences.getBoolean(context.getString(R.string.preference_allow_alarms), false)
         val latestWakeupTime = sharedPreferences.getString(context.getString(R.string.preference_latest_wakeup_time), context.getString(R.string.default_latest_wakeup_time))!!
         val latestWakeupTimeElements = latestWakeupTime.split(":")
