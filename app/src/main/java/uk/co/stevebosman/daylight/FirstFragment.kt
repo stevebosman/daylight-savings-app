@@ -46,7 +46,6 @@ class FirstFragment : Fragment() {
         val view = binding.root
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this.requireContext())
-        getLastLocation()
 
         return view
     }
@@ -54,6 +53,11 @@ class FirstFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getLastLocation()
     }
 
     private fun getLastLocation() {
@@ -146,20 +150,6 @@ class FirstFragment : Fragment() {
             arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
             permissionId
         )
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == permissionId) {
-            @Suppress("ControlFlowWithEmptyBody")
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                // Granted. Start getting the location information
-            }
-        }
     }
 
     private fun isLocationEnabled(): Boolean {
@@ -260,10 +250,10 @@ class FirstFragment : Fragment() {
     ) {
         daylight.date =
             today.solarNoonTime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL))
-        println("*****")
-        println("Noon: ${today.solarNoonTime}")
-        println("Sunrise: ${today.sunriseTime}")
-        println("Sunset: ${today.sunsetTime}")
+//        println("*****")
+//        println("Noon: ${today.solarNoonTime}")
+//        println("Sunrise: ${today.sunriseTime}")
+//        println("Sunset: ${today.sunsetTime}")
 
         val earliestSleepTimeYesterday = calculateEarliestSleepTime(yesterday, preferences)
         val latestWakeUpTimeToday = calculateLatestWakeupTime(today, preferences)
