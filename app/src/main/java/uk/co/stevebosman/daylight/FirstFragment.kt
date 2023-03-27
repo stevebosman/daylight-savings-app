@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.*
@@ -27,25 +28,29 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.temporal.ChronoUnit
 
+private const val REFRESH_INTERVAL: Long = 5 * 60 * 1000
+
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class FirstFragment : Fragment() {
-    private val permissionId: Int = 15169
+    private var locationPermitted: Boolean = true
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private var _binding: FragmentFirstBinding? = null
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFirstBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this.requireContext())
+        mFusedLocationClient =
+            LocationServices.getFusedLocationProviderClient(this.requireContext())
 
         return view
     }
@@ -56,100 +61,64 @@ class FirstFragment : Fragment() {
     }
 
     override fun onResume() {
+        Log.i("Daylight", "onResume")
         super.onResume()
-        getLastLocation()
+        if (locationPermitted) {
+            getLastLocation()
+        } else {
+            setSunriseSunset(null)
+        }
     }
 
     private fun getLastLocation() {
-        if (checkPermissions()) {
+        Log.i("Daylight", "getLastLocation")
+        if (ActivityCompat.checkSelfPermission(
+                this.requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.i("Daylight", "insufficient permissions")
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+        } else {
+            Log.i("Daylight", "sufficient permissions")
             if (isLocationEnabled()) {
-                if (ActivityCompat.checkSelfPermission(
-                        this.requireContext(),
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                        this.requireContext(),
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return
-                }
+                Log.i("Daylight", "location enabled")
                 mFusedLocationClient.lastLocation.addOnCompleteListener(this.requireActivity()) { task ->
                     val location: Location? = task.result
                     if (location == null) {
-                        requestNewLocationData()
+                        Log.i("Daylight", "requestNewLocationData")
+                        val mLocationRequest =
+                            LocationRequest.Builder(Priority.PRIORITY_PASSIVE, REFRESH_INTERVAL)
+                                .setWaitForAccurateLocation(true).build()
+                        mFusedLocationClient.requestLocationUpdates(
+                            mLocationRequest, mLocationCallback,
+                            Looper.myLooper()
+                        )
                     } else {
                         Log.i("Daylight", "$location")
                         setSunriseSunset(location)
                     }
                 }
             } else {
+                Log.i("Daylight", "location disabled")
                 Toast.makeText(this.requireContext(), "Turn on location", Toast.LENGTH_LONG).show()
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 startActivity(intent)
             }
+        }
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            Log.i(tag, "Location permission agreed")
+            getLastLocation()
         } else {
-            requestPermissions()
+            Log.i(tag, "Location permission not agreed")
+            locationPermitted = false
+            setSunriseSunset(null)
         }
-    }
-
-    private val mLocationCallback = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult) {
-            Log.i("Daylight", "${locationResult.lastLocation}")
-            setSunriseSunset(locationResult.lastLocation)
-        }
-    }
-
-    private fun requestNewLocationData() {
-        val mLocationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).setWaitForAccurateLocation(true).build()
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this.requireActivity())
-        if (ActivityCompat.checkSelfPermission(
-                this.requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this.requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
-        mFusedLocationClient.requestLocationUpdates(
-            mLocationRequest, mLocationCallback,
-            Looper.myLooper()
-        )
-    }
-
-    private fun checkPermissions(): Boolean {
-        if (ActivityCompat.checkSelfPermission(
-                this.requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            return true
-        }
-        return false
-    }
-
-    private fun requestPermissions() {
-        ActivityCompat.requestPermissions(
-            this.requireActivity(),
-            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-            permissionId
-        )
     }
 
     private fun isLocationEnabled(): Boolean {
@@ -160,9 +129,25 @@ class FirstFragment : Fragment() {
         )
     }
 
+    private val mLocationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            Log.i("Daylight", "${locationResult.lastLocation}")
+            setSunriseSunset(locationResult.lastLocation)
+        }
+    }
+
     private fun setSunriseSunset(location: Location?) {
-        val latitude: Angle = Angle.fromDegrees(location?.latitude ?: 0)
-        val longitude: Angle = Angle.fromDegrees(location?.longitude ?: 51.4769)
+
+        val latitude: Angle
+        val longitude: Angle
+        if (location == null) {
+            latitude = Angle.fromDegrees(0)
+            longitude = Angle.fromDegrees(0)
+        } else {
+            latitude = Angle.fromDegrees(location.latitude)
+            longitude = Angle.fromDegrees(location.longitude)
+        }
+
         val today = ZonedDateTime.now()
 
         val sunriseDetails = arrayListOf<SunriseDetails>()
@@ -239,7 +224,16 @@ class FirstFragment : Fragment() {
     private val waxingGibbousMoon = "\uD83C\uDF16"
     private val lastQuarterMoon = "\uD83C\uDF17"
     private val waxingCrescentMoon = "\uD83C\uDF18"
-    private val moonPhaseIcons = arrayOf(newMoon, crescentMoon, quarterMoon, gibbousMoon, fullMoon, waxingGibbousMoon, lastQuarterMoon, waxingCrescentMoon)
+    private val moonPhaseIcons = arrayOf(
+        newMoon,
+        crescentMoon,
+        quarterMoon,
+        gibbousMoon,
+        fullMoon,
+        waxingGibbousMoon,
+        lastQuarterMoon,
+        waxingCrescentMoon
+    )
 
     private fun populateSunriseSunset(
         yesterday: SunriseDetails,
@@ -292,23 +286,24 @@ class FirstFragment : Fragment() {
             sleep = earliestSleepTimeToday
         }
         daylight.sunrise =
-            when(today.daylightType) {
+            when (today.daylightType) {
                 DaylightType.MIDNIGHT_SUN -> getString(R.string.midnight_sun)
                 DaylightType.POLAR_NIGHT -> getString(R.string.polar_night)
                 else -> sunriseIcon + formatTime(today.sunriseTime)
             } + "\n" + alarmClockIcon + formatTime(wakeUp)
 
         daylight.sunset =
-            when(today.daylightType) {
+            when (today.daylightType) {
                 DaylightType.MIDNIGHT_SUN -> getString(R.string.midnight_sun)
                 DaylightType.POLAR_NIGHT -> getString(R.string.polar_night)
-                else -> moonPhaseIcons[(today.moonPhase * 8+0.5).toInt()%8] + formatTime(today.sunsetTime)
+                else -> moonPhaseIcons[(today.moonPhase * 8 + 0.5).toInt() % 8] + formatTime(today.sunsetTime)
             } + "\n" + sleepIcon + formatTime(sleep)
     }
 
     private fun formatTime(date: ZonedDateTime): String {
         return date.toLocalTime().plusSeconds(30).truncatedTo(ChronoUnit.MINUTES).format(
-            DateTimeFormatter.ofPattern("HH:mm"))
+            DateTimeFormatter.ofPattern("HH:mm")
+        )
     }
 
     private fun earliest(date1: ZonedDateTime, date2: ZonedDateTime): ZonedDateTime {
@@ -319,8 +314,9 @@ class FirstFragment : Fragment() {
         sunriseDetails: SunriseDetails,
         preferences: Preferences
     ): ZonedDateTime {
-        val earliestSleepTime = sunriseDetails.solarNoonTime.withHour(preferences.earliestSleepTimeHours)
-            .withMinute(preferences.earliestSleepTimeMinutes).truncatedTo(ChronoUnit.MINUTES)
+        val earliestSleepTime =
+            sunriseDetails.solarNoonTime.withHour(preferences.earliestSleepTimeHours)
+                .withMinute(preferences.earliestSleepTimeMinutes).truncatedTo(ChronoUnit.MINUTES)
         return if (sunriseDetails.sunsetTime.isAfter(earliestSleepTime)) sunriseDetails.sunsetTime else earliestSleepTime
     }
 
