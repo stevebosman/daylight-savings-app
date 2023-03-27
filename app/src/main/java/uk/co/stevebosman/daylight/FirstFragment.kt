@@ -20,6 +20,9 @@ import androidx.fragment.app.Fragment
 import com.google.android.gms.location.*
 import uk.co.stevebosman.angles.Angle
 import uk.co.stevebosman.daylight.databinding.FragmentFirstBinding
+import uk.co.stevebosman.daylight.day.DayDetailCalculator
+import uk.co.stevebosman.daylight.day.DayDetails
+import uk.co.stevebosman.daylight.day.MoonPhase
 import uk.co.stevebosman.sunrise.DaylightType
 import uk.co.stevebosman.sunrise.SunriseDetails
 import uk.co.stevebosman.sunrise.calculateSunriseDetails
@@ -161,143 +164,62 @@ class FirstFragment : Fragment() {
             )
         }
 
-        val preferences = Preferences(this.requireContext())
-        populateSunriseSunset(
-            sunriseDetails[0],
-            sunriseDetails[1],
-            sunriseDetails[2],
-            preferences,
-            binding.daylight1
+        val dayDetailCalculator = DayDetailCalculator(Preferences(this.requireContext()))
+        populateDaylightView(
+            binding.daylight1,
+            dayDetailCalculator.calculate(sunriseDetails[0], sunriseDetails[1], sunriseDetails[2])
         )
-        populateSunriseSunset(
-            sunriseDetails[1],
-            sunriseDetails[2],
-            sunriseDetails[3],
-            preferences,
-            binding.daylight2
+        populateDaylightView(
+            binding.daylight2,
+            dayDetailCalculator.calculate(sunriseDetails[1], sunriseDetails[2], sunriseDetails[3])
         )
-        populateSunriseSunset(
-            sunriseDetails[2],
-            sunriseDetails[3],
-            sunriseDetails[4],
-            preferences,
-            binding.daylight3
+        populateDaylightView(
+            binding.daylight3,
+            dayDetailCalculator.calculate(sunriseDetails[2], sunriseDetails[3], sunriseDetails[4])
         )
-        populateSunriseSunset(
-            sunriseDetails[3],
-            sunriseDetails[4],
-            sunriseDetails[5],
-            preferences,
-            binding.daylight4
+        populateDaylightView(
+            binding.daylight4,
+            dayDetailCalculator.calculate(sunriseDetails[3], sunriseDetails[4], sunriseDetails[5])
         )
-        populateSunriseSunset(
-            sunriseDetails[4],
-            sunriseDetails[5],
-            sunriseDetails[6],
-            preferences,
-            binding.daylight5
+        populateDaylightView(
+            binding.daylight5,
+            dayDetailCalculator.calculate(sunriseDetails[4], sunriseDetails[5], sunriseDetails[6])
         )
-        populateSunriseSunset(
-            sunriseDetails[5],
-            sunriseDetails[6],
-            sunriseDetails[7],
-            preferences,
-            binding.daylight6
+        populateDaylightView(
+            binding.daylight6,
+            dayDetailCalculator.calculate(sunriseDetails[5], sunriseDetails[6], sunriseDetails[7])
         )
-        populateSunriseSunset(
-            sunriseDetails[6],
-            sunriseDetails[7],
-            sunriseDetails[8],
-            preferences,
-            binding.daylight7
+        populateDaylightView(
+            binding.daylight7,
+            dayDetailCalculator.calculate(sunriseDetails[6], sunriseDetails[7], sunriseDetails[8])
         )
     }
 
     private val alarmClockIcon = "\u23f0"
     private val sleepIcon = "\uD83D\uDCA4"
     private val sunriseIcon = "\uD83C\uDF05"
-    private val newMoon = "\uD83C\uDF11"
-    private val crescentMoon = "\uD83C\uDF12"
-    private val quarterMoon = "\uD83C\uDF13"
-    private val gibbousMoon = "\uD83C\uDF14"
-    private val fullMoon = "\uD83C\uDF15"
-    private val waxingGibbousMoon = "\uD83C\uDF16"
-    private val lastQuarterMoon = "\uD83C\uDF17"
-    private val waxingCrescentMoon = "\uD83C\uDF18"
-    private val moonPhaseIcons = arrayOf(
-        newMoon,
-        crescentMoon,
-        quarterMoon,
-        gibbousMoon,
-        fullMoon,
-        waxingGibbousMoon,
-        lastQuarterMoon,
-        waxingCrescentMoon
-    )
 
-    private fun populateSunriseSunset(
-        yesterday: SunriseDetails,
-        today: SunriseDetails,
-        tomorrow: SunriseDetails,
-        preferences: Preferences,
-        daylight: DaylightView
+    private fun populateDaylightView(
+        daylight: DaylightView,
+        dayDetails: DayDetails
     ) {
+        val currentDay = dayDetails.day
         daylight.date =
-            today.solarNoonTime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL))
-//        println("*****")
-//        println("Noon: ${today.solarNoonTime}")
-//        println("Sunrise: ${today.sunriseTime}")
-//        println("Sunset: ${today.sunsetTime}")
+            currentDay.solarNoonTime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL))
 
-        val earliestSleepTimeYesterday = calculateEarliestSleepTime(yesterday, preferences)
-        val latestWakeUpTimeToday = calculateLatestWakeupTime(today, preferences)
-        val earliestSleepTimeToday = calculateEarliestSleepTime(today, preferences)
-        val latestWakeUpTimeTomorrow = calculateLatestWakeupTime(tomorrow, preferences)
-        var wakeUp: ZonedDateTime
-        var sleep: ZonedDateTime
-        if (today.daylightType == DaylightType.POLAR_NIGHT || today.daylightType == DaylightType.MIDNIGHT_SUN) {
-            wakeUp = latestWakeUpTimeToday
-            sleep = earliestSleepTimeToday
-        } else {
-            wakeUp = today.sunriseTime
-            // is sunrise too close to the earliest sleep time?
-            if (ChronoUnit.MINUTES.between(
-                    earliestSleepTimeYesterday,
-                    wakeUp
-                ) < preferences.sleepDurationMinutes
-            ) {
-                wakeUp = earliestSleepTimeYesterday.plusMinutes(preferences.sleepDurationMinutes)
-            }
-
-            sleep = today.sunsetTime
-            val tomorrowsWakeUp = earliest(latestWakeUpTimeTomorrow, tomorrow.sunriseTime)
-            if (ChronoUnit.MINUTES.between(
-                    sleep,
-                    tomorrowsWakeUp
-                ) > preferences.sleepDurationMinutes
-            ) {
-                sleep = tomorrowsWakeUp.minusMinutes(preferences.sleepDurationMinutes)
-            }
-        }
-        if (wakeUp.isAfter(latestWakeUpTimeToday)) {
-            wakeUp = latestWakeUpTimeToday
-        }
-        if (sleep.isBefore(earliestSleepTimeToday)) {
-            sleep = earliestSleepTimeToday
-        }
         daylight.sunrise =
-            when (today.daylightType) {
+            when (currentDay.daylightType) {
                 DaylightType.MIDNIGHT_SUN -> getString(R.string.midnight_sun)
                 DaylightType.POLAR_NIGHT -> getString(R.string.polar_night)
-                else -> sunriseIcon + formatTime(today.sunriseTime)
-            } + "\n" + alarmClockIcon + formatTime(wakeUp)
+                else -> sunriseIcon + formatTime(currentDay.sunriseTime)
+            } + "\n" + alarmClockIcon + formatTime(dayDetails.wakeUp)
 
         daylight.sunset =
-            when (today.daylightType) {
+            when (currentDay.daylightType) {
                 DaylightType.MIDNIGHT_SUN -> getString(R.string.midnight_sun)
                 DaylightType.POLAR_NIGHT -> getString(R.string.polar_night)
-                else -> moonPhaseIcons[(today.moonPhase * 8 + 0.5).toInt() % 8] + formatTime(today.sunsetTime)
-            } + "\n" + sleepIcon + formatTime(sleep)
+                else -> MoonPhase.getIcon(currentDay) + formatTime(currentDay.sunsetTime)
+            } + "\n" + sleepIcon + formatTime(dayDetails.sleep)
     }
 
     private fun formatTime(date: ZonedDateTime): String {
@@ -305,24 +227,4 @@ class FirstFragment : Fragment() {
             DateTimeFormatter.ofPattern("HH:mm")
         )
     }
-
-    private fun earliest(date1: ZonedDateTime, date2: ZonedDateTime): ZonedDateTime {
-        return if (date1.isBefore(date2)) date1 else date2
-    }
-
-    private fun calculateEarliestSleepTime(
-        sunriseDetails: SunriseDetails,
-        preferences: Preferences
-    ): ZonedDateTime {
-        val earliestSleepTime =
-            sunriseDetails.solarNoonTime.withHour(preferences.earliestSleepTimeHours)
-                .withMinute(preferences.earliestSleepTimeMinutes).truncatedTo(ChronoUnit.MINUTES)
-        return if (sunriseDetails.sunsetTime.isAfter(earliestSleepTime)) sunriseDetails.sunsetTime else earliestSleepTime
-    }
-
-    private fun calculateLatestWakeupTime(
-        sunriseDetails: SunriseDetails,
-        preferences: Preferences
-    ) = sunriseDetails.solarNoonTime.withHour(preferences.latestWakeupTimeHours)
-        .withMinute(preferences.latestWakeupTimeMinutes).truncatedTo(ChronoUnit.MINUTES)
 }
