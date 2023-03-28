@@ -1,16 +1,39 @@
 package uk.co.stevebosman.daylight.day
 
 import android.util.Log
+import uk.co.stevebosman.angles.Angle
 import uk.co.stevebosman.daylight.Preferences
 import uk.co.stevebosman.sunrise.DaylightType
 import uk.co.stevebosman.sunrise.SunriseDetails
+import uk.co.stevebosman.sunrise.calculateSunriseDetails
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 
 class DayDetailCalculator(val preferences: Preferences) {
-    fun calculate(yesterday: SunriseDetails,
-                  today: SunriseDetails,
-                  tomorrow: SunriseDetails
+    fun calculate(day: ZonedDateTime, longitude: Angle, latitude: Angle): DayDetails {
+        val yesterday = calculateSunriseDetails(
+            day.plusDays(-1),
+            longitude,
+            latitude
+        )
+        val today = calculateSunriseDetails(
+            day,
+            longitude,
+            latitude
+        )
+        val tomorrow = calculateSunriseDetails(
+            day.plusDays(1),
+            longitude,
+            latitude
+        )
+
+        return calculate(yesterday, today, tomorrow)
+    }
+
+    fun calculate(
+        yesterday: SunriseDetails,
+        today: SunriseDetails,
+        tomorrow: SunriseDetails
     ): DayDetails {
         Log.i("Daylight", "*****")
         Log.i("Daylight", "Noon: ${today.solarNoonTime}")

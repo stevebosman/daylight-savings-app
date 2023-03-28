@@ -24,8 +24,6 @@ import uk.co.stevebosman.daylight.day.DayDetailCalculator
 import uk.co.stevebosman.daylight.day.DayDetails
 import uk.co.stevebosman.daylight.day.MoonPhase
 import uk.co.stevebosman.sunrise.DaylightType
-import uk.co.stevebosman.sunrise.SunriseDetails
-import uk.co.stevebosman.sunrise.calculateSunriseDetails
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -44,6 +42,7 @@ class FirstFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private var daylightsViews: ArrayList<DaylightView> = ArrayList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,6 +50,18 @@ class FirstFragment : Fragment() {
     ): View {
         _binding = FragmentFirstBinding.inflate(inflater, container, false)
         val view = binding.root
+
+        daylightsViews = arrayListOf(
+            binding.daylight1,
+            binding.daylight2,
+            binding.daylight3,
+            binding.daylight4,
+            binding.daylight5,
+            binding.daylight6,
+            binding.daylight7,
+            binding.daylight8,
+            binding.daylight9
+        )
 
         mFusedLocationClient =
             LocationServices.getFusedLocationProviderClient(this.requireContext())
@@ -153,46 +164,14 @@ class FirstFragment : Fragment() {
 
         val today = ZonedDateTime.now()
 
-        val sunriseDetails = arrayListOf<SunriseDetails>()
-        for (i in -1..7) {
-            sunriseDetails.add(
-                calculateSunriseDetails(
-                    today.plusDays(i.toLong()),
-                    longitude,
-                    latitude
-                )
+        val dayDetailCalculator = DayDetailCalculator(Preferences(this.requireContext()))
+
+        daylightsViews.forEachIndexed { i, v ->
+            populateDaylightView(
+                v,
+                dayDetailCalculator.calculate(today.plusDays(i.toLong()), longitude, latitude)
             )
         }
-
-        val dayDetailCalculator = DayDetailCalculator(Preferences(this.requireContext()))
-        populateDaylightView(
-            binding.daylight1,
-            dayDetailCalculator.calculate(sunriseDetails[0], sunriseDetails[1], sunriseDetails[2])
-        )
-        populateDaylightView(
-            binding.daylight2,
-            dayDetailCalculator.calculate(sunriseDetails[1], sunriseDetails[2], sunriseDetails[3])
-        )
-        populateDaylightView(
-            binding.daylight3,
-            dayDetailCalculator.calculate(sunriseDetails[2], sunriseDetails[3], sunriseDetails[4])
-        )
-        populateDaylightView(
-            binding.daylight4,
-            dayDetailCalculator.calculate(sunriseDetails[3], sunriseDetails[4], sunriseDetails[5])
-        )
-        populateDaylightView(
-            binding.daylight5,
-            dayDetailCalculator.calculate(sunriseDetails[4], sunriseDetails[5], sunriseDetails[6])
-        )
-        populateDaylightView(
-            binding.daylight6,
-            dayDetailCalculator.calculate(sunriseDetails[5], sunriseDetails[6], sunriseDetails[7])
-        )
-        populateDaylightView(
-            binding.daylight7,
-            dayDetailCalculator.calculate(sunriseDetails[6], sunriseDetails[7], sunriseDetails[8])
-        )
     }
 
     private val alarmClockIcon = "\u23f0"
