@@ -24,7 +24,7 @@
         android:layout_margin="10dp"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/daylight5"
+        app:layout_constraintEnd_toStartOf="@id/daylight6"
         app:layout_constraintTop_toBottomOf="@id/daylight1"
         app:layout_constraintBottom_toTopOf="@id/daylight3"
         />
@@ -35,7 +35,7 @@
         android:layout_margin="10dp"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/daylight6"
+        app:layout_constraintEnd_toStartOf="@id/daylight7"
         app:layout_constraintTop_toBottomOf="@id/daylight2"
         app:layout_constraintBottom_toTopOf="@id/daylight4"
         />
@@ -46,12 +46,23 @@
         android:layout_margin="10dp"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/daylight7"
+        app:layout_constraintEnd_toStartOf="@id/daylight8"
         app:layout_constraintTop_toBottomOf="@id/daylight3"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/daylight5"
         />
     <uk.co.stevebosman.daylight.DaylightView
         android:id="@+id/daylight5"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_margin="10dp"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/daylight9"
+        app:layout_constraintTop_toBottomOf="@id/daylight4"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+    <uk.co.stevebosman.daylight.DaylightView
+        android:id="@+id/daylight6"
         android:layout_width="wrap_content"
         android:layout_height="45dp"
         android:layout_margin="20dp"
@@ -61,7 +72,7 @@
         app:layout_constraintBottom_toBottomOf="@id/daylight2"
         />
     <uk.co.stevebosman.daylight.DaylightView
-        android:id="@+id/daylight6"
+        android:id="@+id/daylight7"
         android:layout_width="wrap_content"
         android:layout_height="45dp"
         android:layout_margin="20dp"
@@ -71,7 +82,7 @@
         app:layout_constraintBottom_toBottomOf="@id/daylight3"
         />
     <uk.co.stevebosman.daylight.DaylightView
-        android:id="@+id/daylight7"
+        android:id="@+id/daylight8"
         android:layout_width="wrap_content"
         android:layout_height="45dp"
         android:layout_margin="20dp"
@@ -80,6 +91,15 @@
         app:layout_constraintTop_toTopOf="@id/daylight4"
         app:layout_constraintBottom_toBottomOf="@id/daylight4"
         />
-
+    <uk.co.stevebosman.daylight.DaylightView
+        android:id="@+id/daylight9"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_margin="20dp"
+        app:layout_constraintStart_toEndOf="@id/daylight5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/daylight5"
+        app:layout_constraintBottom_toBottomOf="@id/daylight5"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

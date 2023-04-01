@@ -37,10 +37,6 @@ class MainActivity : AppCompatActivity() {
                 showSettings()
                 true
             }
-            R.id.action_refresh -> {
-                //requestNewLocationData()
-                true
-            }
             R.id.action_about -> {
                 showAbout()
                 true

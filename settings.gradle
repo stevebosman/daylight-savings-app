@@ -14,8 +14,8 @@ dependencyResolutionManagement {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/stevebosman/sunrise-equation")
             credentials {
-                username = user
-                password = key
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("PAT")
             }
         }
         maven {

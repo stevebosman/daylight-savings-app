@@ -1,7 +1,7 @@
 package uk.co.stevebosman.daylight
 
 import android.content.Context
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 
 class Preferences(context: Context) {
     private val allowAlarms: Boolean
