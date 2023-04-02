@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
@@ -151,16 +152,10 @@ class FirstFragment : Fragment() {
     }
 
     private fun setSunriseSunset(location: Location?) {
-
-        val latitude: Angle
-        val longitude: Angle
-        if (location == null) {
-            latitude = Angle.fromDegrees(0)
-            longitude = Angle.fromDegrees(0)
-        } else {
-            latitude = Angle.fromDegrees(location.latitude)
-            longitude = Angle.fromDegrees(location.longitude)
-        }
+        val latitude: Angle = Angle.fromDegrees(location?.latitude ?: 0)
+//        val latitude: Angle = Angle.fromDegrees(-84)
+        val longitude: Angle = Angle.fromDegrees(location?.longitude ?: 0)
+//        val longitude: Angle = Angle.fromDegrees(-122)
 
         val today = ZonedDateTime.now()
 
@@ -177,6 +172,8 @@ class FirstFragment : Fragment() {
     private val alarmClockIcon = "\u23f0"
     private val sleepIcon = "\uD83D\uDCA4"
     private val sunriseIcon = "\uD83C\uDF05"
+    private val midnightSunIcon = "\u2600\ufe0f"
+    private val polarNightIcon = "\u2b1b"
 
     private fun populateDaylightView(
         daylight: DaylightView,
@@ -186,19 +183,22 @@ class FirstFragment : Fragment() {
         daylight.date =
             currentDay.solarNoonTime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL))
 
+        val timeSeparator =
+            if (requireContext().resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) " " else "\n"
+
         daylight.sunrise =
             when (currentDay.daylightType) {
-                DaylightType.MIDNIGHT_SUN -> getString(R.string.midnight_sun)
-                DaylightType.POLAR_NIGHT -> getString(R.string.polar_night)
+                DaylightType.MIDNIGHT_SUN -> midnightSunIcon + getString(R.string.polar)
+                DaylightType.POLAR_NIGHT -> polarNightIcon + getString(R.string.polar)
                 else -> sunriseIcon + formatTime(currentDay.sunriseTime)
-            } + "\n" + alarmClockIcon + formatTime(dayDetails.wakeUp)
+            } + timeSeparator + alarmClockIcon + formatTime(dayDetails.wakeUp)
 
         daylight.sunset =
             when (currentDay.daylightType) {
-                DaylightType.MIDNIGHT_SUN -> getString(R.string.midnight_sun)
-                DaylightType.POLAR_NIGHT -> getString(R.string.polar_night)
+                DaylightType.MIDNIGHT_SUN -> midnightSunIcon + getString(R.string.polar)
+                DaylightType.POLAR_NIGHT -> polarNightIcon + getString(R.string.polar)
                 else -> MoonPhase.getIcon(currentDay) + formatTime(currentDay.sunsetTime)
-            } + "\n" + sleepIcon + formatTime(dayDetails.sleep)
+            } + timeSeparator + sleepIcon + formatTime(dayDetails.sleep)
     }
 
     private fun formatTime(date: ZonedDateTime): String {
