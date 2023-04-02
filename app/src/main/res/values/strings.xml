@@ -10,9 +10,12 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
+    <string name="polar">Polar</string>
     <string name="midnight_sun">Midnight Sun</string>
     <string name="polar_night">Polar Night</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="daylight_morning">%1$s %2$s</string>
+    <string name="daylight_evening">%1$s %2$s</string>
 
     <!-- START Preferences -->
     <string name="daytime_header">Daytime</string>
