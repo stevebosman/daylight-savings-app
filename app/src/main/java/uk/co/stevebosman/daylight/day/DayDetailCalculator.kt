@@ -46,7 +46,7 @@ class DayDetailCalculator(val preferences: Preferences) {
         val latestWakeUpTimeTomorrow = calculateLatestWakeupTime(tomorrow, preferences)
         var wakeUp: ZonedDateTime
         var sleep: ZonedDateTime
-        if (today.daylightType == DaylightType.POLAR_NIGHT || today.daylightType == DaylightType.MIDNIGHT_SUN) {
+        if (today.sunriseType == DaylightType.POLAR_NIGHT || today.sunriseType == DaylightType.MIDNIGHT_SUN) {
             wakeUp = latestWakeUpTimeToday
             sleep = earliestSleepTimeToday
         } else {

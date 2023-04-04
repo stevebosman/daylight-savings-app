@@ -153,7 +153,7 @@ class FirstFragment : Fragment() {
 
     private fun setSunriseSunset(location: Location?) {
         val latitude: Angle = Angle.fromDegrees(location?.latitude ?: 0)
-//        val latitude: Angle = Angle.fromDegrees(-84)
+//        val latitude: Angle = Angle.fromDegrees(82)
         val longitude: Angle = Angle.fromDegrees(location?.longitude ?: 0)
 //        val longitude: Angle = Angle.fromDegrees(-122)
 
@@ -187,17 +187,17 @@ class FirstFragment : Fragment() {
             if (requireContext().resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) " " else "\n"
 
         daylight.sunrise =
-            when (currentDay.daylightType) {
+            when (currentDay.sunriseType) {
                 DaylightType.MIDNIGHT_SUN -> midnightSunIcon + getString(R.string.polar)
                 DaylightType.POLAR_NIGHT -> polarNightIcon + getString(R.string.polar)
                 else -> sunriseIcon + formatTime(currentDay.sunriseTime)
             } + timeSeparator + alarmClockIcon + formatTime(dayDetails.wakeUp)
 
         daylight.sunset =
-            when (currentDay.daylightType) {
-                DaylightType.MIDNIGHT_SUN -> midnightSunIcon + getString(R.string.polar)
-                DaylightType.POLAR_NIGHT -> polarNightIcon + getString(R.string.polar)
-                else -> MoonPhase.getIcon(currentDay) + formatTime(currentDay.sunsetTime)
+            MoonPhase.getIcon(currentDay) + when (currentDay.sunsetType) {
+                DaylightType.MIDNIGHT_SUN -> getString(R.string.polar)
+                DaylightType.POLAR_NIGHT -> getString(R.string.polar)
+                else -> formatTime(currentDay.sunsetTime)
             } + timeSeparator + sleepIcon + formatTime(dayDetails.sleep)
     }
 
