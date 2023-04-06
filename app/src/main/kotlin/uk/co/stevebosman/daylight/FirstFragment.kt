@@ -25,6 +25,7 @@ import uk.co.stevebosman.daylight.day.DayDetailCalculator
 import uk.co.stevebosman.daylight.day.DayDetails
 import uk.co.stevebosman.daylight.day.MoonPhase
 import uk.co.stevebosman.sunrise.DaylightType
+import uk.co.stevebosman.sunrise.calculateSunriseDetails
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -153,19 +154,30 @@ class FirstFragment : Fragment() {
 
     private fun setSunriseSunset(location: Location?) {
         val latitude: Angle = Angle.fromDegrees(location?.latitude ?: 0)
-//        val latitude: Angle = Angle.fromDegrees(82)
+//        val latitude: Angle = Angle.fromDegrees(-82)
         val longitude: Angle = Angle.fromDegrees(location?.longitude ?: 0)
-//        val longitude: Angle = Angle.fromDegrees(-122)
+//        val longitude: Angle = Angle.fromDegrees(45)
 
         val today = ZonedDateTime.now()
 
+        val sunriseDetails = Array(daylightsViews.size + 2) { i ->
+            calculateSunriseDetails(
+                today.plusDays((i - 1).toLong()),
+                longitude,
+                latitude
+            )
+        }
+
         val dayDetailCalculator = DayDetailCalculator(Preferences(this.requireContext()))
+        val dayDetails = dayDetailCalculator.calculate(sunriseDetails)
 
         daylightsViews.forEachIndexed { i, v ->
-            populateDaylightView(
-                v,
-                dayDetailCalculator.calculate(today.plusDays(i.toLong()), longitude, latitude)
-            )
+            val day = dayDetails[i].day
+            Log.i("Daylight", "*".repeat(10))
+            Log.i("Daylight", "Noon: ${day.solarNoonTime}")
+            Log.i("Daylight", "Sunrise: ${day.sunriseTime}")
+            Log.i("Daylight", "Sunset: ${day.sunsetTime}")
+            populateDaylightView(v, dayDetails[i])
         }
     }
 
@@ -188,22 +200,25 @@ class FirstFragment : Fragment() {
 
         daylight.sunrise =
             when (currentDay.sunriseType) {
-                DaylightType.MIDNIGHT_SUN -> midnightSunIcon + getString(R.string.polar)
-                DaylightType.POLAR_NIGHT -> polarNightIcon + getString(R.string.polar)
+                DaylightType.MIDNIGHT_SUN -> midnightSunIcon + formatDate(currentDay.sunriseTime)
+                DaylightType.POLAR_NIGHT -> polarNightIcon + formatDate(currentDay.sunsetTime)
                 else -> sunriseIcon + formatTime(currentDay.sunriseTime)
             } + timeSeparator + alarmClockIcon + formatTime(dayDetails.wakeUp)
 
         daylight.sunset =
-            MoonPhase.getIcon(currentDay) + when (currentDay.sunsetType) {
-                DaylightType.MIDNIGHT_SUN -> getString(R.string.polar)
-                DaylightType.POLAR_NIGHT -> getString(R.string.polar)
+            MoonPhase.of(currentDay.moonPhase).icon + when (currentDay.sunsetType) {
+                DaylightType.MIDNIGHT_SUN -> formatDate(currentDay.sunsetTime)
+                DaylightType.POLAR_NIGHT -> formatDate(currentDay.sunriseTime)
                 else -> formatTime(currentDay.sunsetTime)
             } + timeSeparator + sleepIcon + formatTime(dayDetails.sleep)
     }
 
-    private fun formatTime(date: ZonedDateTime): String {
-        return date.toLocalTime().plusSeconds(30).truncatedTo(ChronoUnit.MINUTES).format(
+    private fun formatDate(date: ZonedDateTime): String = date.toLocalDate().format(
+        DateTimeFormatter.ofPattern("dd-MMM")
+    )
+
+    private fun formatTime(date: ZonedDateTime): String =
+        date.toLocalTime().plusSeconds(30).truncatedTo(ChronoUnit.MINUTES).format(
             DateTimeFormatter.ofPattern("HH:mm")
         )
-    }
 }

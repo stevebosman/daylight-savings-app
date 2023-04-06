@@ -1,45 +1,20 @@
 package uk.co.stevebosman.daylight.day
 
-import android.util.Log
-import uk.co.stevebosman.angles.Angle
-import uk.co.stevebosman.daylight.Preferences
+import uk.co.stevebosman.daylight.PreferenceValues
 import uk.co.stevebosman.sunrise.DaylightType
 import uk.co.stevebosman.sunrise.SunriseDetails
-import uk.co.stevebosman.sunrise.calculateSunriseDetails
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 
-class DayDetailCalculator(val preferences: Preferences) {
-    fun calculate(day: ZonedDateTime, longitude: Angle, latitude: Angle): DayDetails {
-        val yesterday = calculateSunriseDetails(
-            day.plusDays(-1),
-            longitude,
-            latitude
-        )
-        val today = calculateSunriseDetails(
-            day,
-            longitude,
-            latitude
-        )
-        val tomorrow = calculateSunriseDetails(
-            day.plusDays(1),
-            longitude,
-            latitude
-        )
+class DayDetailCalculator(private val preferences: PreferenceValues) {
+    fun calculate(days: Array<SunriseDetails>) =
+        Array(days.size - 2) { i -> calculate(days[i], days[i + 1], days[i + 2]) }
 
-        return calculate(yesterday, today, tomorrow)
-    }
-
-    fun calculate(
+    private fun calculate(
         yesterday: SunriseDetails,
         today: SunriseDetails,
         tomorrow: SunriseDetails
     ): DayDetails {
-        Log.i("Daylight", "*****")
-        Log.i("Daylight", "Noon: ${today.solarNoonTime}")
-        Log.i("Daylight", "Sunrise: ${today.sunriseTime}")
-        Log.i("Daylight", "Sunset: ${today.sunsetTime}")
-
         val earliestSleepTimeYesterday = calculateEarliestSleepTime(yesterday, preferences)
         val latestWakeUpTimeToday = calculateLatestWakeupTime(today, preferences)
         val earliestSleepTimeToday = calculateEarliestSleepTime(today, preferences)
@@ -85,7 +60,7 @@ class DayDetailCalculator(val preferences: Preferences) {
 
     private fun calculateEarliestSleepTime(
         sunriseDetails: SunriseDetails,
-        preferences: Preferences
+        preferences: PreferenceValues
     ): ZonedDateTime {
         val earliestSleepTime =
             sunriseDetails.solarNoonTime.withHour(preferences.earliestSleepTimeHours)
@@ -95,7 +70,7 @@ class DayDetailCalculator(val preferences: Preferences) {
 
     private fun calculateLatestWakeupTime(
         sunriseDetails: SunriseDetails,
-        preferences: Preferences
+        preferences: PreferenceValues
     ) = sunriseDetails.solarNoonTime.withHour(preferences.latestWakeupTimeHours)
         .withMinute(preferences.latestWakeupTimeMinutes).truncatedTo(ChronoUnit.MINUTES)
 }
