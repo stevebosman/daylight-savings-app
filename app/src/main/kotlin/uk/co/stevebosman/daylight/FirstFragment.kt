@@ -18,7 +18,12 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import com.google.android.gms.location.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import uk.co.stevebosman.angles.Angle
 import uk.co.stevebosman.daylight.databinding.FragmentFirstBinding
 import uk.co.stevebosman.daylight.day.DayDetailCalculator
@@ -153,12 +158,17 @@ class FirstFragment : Fragment() {
     }
 
     private fun setSunriseSunset(location: Location?) {
-        val latitude: Angle = Angle.fromDegrees(location?.latitude ?: 0)
-//        val latitude: Angle = Angle.fromDegrees(-82)
-        val longitude: Angle = Angle.fromDegrees(location?.longitude ?: 0)
-//        val longitude: Angle = Angle.fromDegrees(45)
-
         val today = ZonedDateTime.now()
+        val latitude: Angle = Angle.fromDegrees(location?.latitude ?: 0)
+        val longitude: Angle = Angle.fromDegrees(location?.longitude ?: 0)
+
+//        val today = ZonedDateTime.of(2023,3, 25,12,0,0,0, ZoneId.of("Europe/London"))
+//        val latitude: Angle = Angle.fromDegrees(50)
+//        val longitude: Angle = Angle.fromDegrees(0)
+
+//        val today = ZonedDateTime.of(2023,3, 25,12,0,0,0, ZoneId.of("America/Los_Angeles"))
+//        val latitude: Angle = Angle.fromDegrees(-82)
+//        val longitude: Angle = Angle.fromDegrees(45)
 
         val sunriseDetails = Array(daylightsViews.size + 2) { i ->
             calculateSunriseDetails(

@@ -32,28 +32,33 @@ class DayDetailCalculatorTest {
             solarNoonTime.minusDays(1),
             sunriseTime.minusDays(1).plusMinutes(2),
             sunsetTime.minusDays(1).minusMinutes(2),
-            0.1)
+            0.1
+        )
 
         val todaysDetails = SunriseDetails(
             DaylightType.NORMAL, DaylightType.NORMAL,
             solarNoonTime, sunriseTime, sunsetTime,
-            0.1)
+            0.1
+        )
 
         val tomorrowsDetails = SunriseDetails(
             DaylightType.NORMAL, DaylightType.NORMAL,
             solarNoonTime.plusDays(1),
             sunriseTime.plusDays(1).minusMinutes(2),
             sunsetTime.plusDays(1).plusMinutes(2),
-            0.1)
+            0.1
+        )
 
         // When
-        val dayDetails = instance.calculate(arrayOf(yesterdaysDetails, todaysDetails, tomorrowsDetails))
+        val dayDetails =
+            instance.calculate(arrayOf(yesterdaysDetails, todaysDetails, tomorrowsDetails))
 
         // Then
-        assertAll(
-            { assertEquals(todaysDetails, dayDetails[0].day) { "Unexpected day" } },
-            { assertEquals(todaysDetails.sunriseTime, dayDetails[0].wakeUp) {"Unexpected wake up"} },
-            { assertEquals(tomorrowsDetails.sunriseTime.minusMinutes(preferences.sleepDurationMinutes), dayDetails[0].sleep) {"Unexpected sleep"} }
+        assertSunriseDetails(
+            todaysDetails,
+            todaysDetails.sunriseTime,
+            tomorrowsDetails.sunriseTime.minusMinutes(preferences.sleepDurationMinutes),
+            dayDetails[0]
         )
     }
 
@@ -74,32 +79,39 @@ class DayDetailCalculatorTest {
             solarNoonTime.minusDays(1),
             sunriseTime.minusDays(1).minusMinutes(2),
             sunsetTime.minusDays(1).plusMinutes(2),
-            0.1)
+            0.1
+        )
 
         val todaysDetails = SunriseDetails(
             DaylightType.NORMAL, DaylightType.NORMAL,
             solarNoonTime, sunriseTime, sunsetTime,
-            0.1)
+            0.1
+        )
 
         val tomorrowsDetails = SunriseDetails(
             DaylightType.NORMAL, DaylightType.NORMAL,
             solarNoonTime.plusDays(1),
             sunriseTime.plusDays(1).minusMinutes(2),
             sunsetTime.plusDays(1).plusMinutes(2),
-            0.1)
+            0.1
+        )
 
         // When
-        val dayDetails = instance.calculate(arrayOf(yesterdaysDetails, todaysDetails, tomorrowsDetails))
+        val dayDetails =
+            instance.calculate(arrayOf(yesterdaysDetails, todaysDetails, tomorrowsDetails))
 
         // Then
-        val expectedSleep = tomorrowsDetails.sunriseTime
-            .withHour(preferences.latestWakeupTimeHours)
-            .withMinute(preferences.latestWakeupTimeMinutes)
-            .minusMinutes(preferences.sleepDurationMinutes)
-        val expectedWakeUp = solarNoonTime
-            .withHour(preferences.latestWakeupTimeHours)
-            .withMinute(preferences.latestWakeupTimeMinutes)
-        assertSunriseDetails(todaysDetails, expectedWakeUp, expectedSleep, dayDetails[0])
+        assertSunriseDetails(
+            todaysDetails,
+            solarNoonTime
+                .withHour(preferences.latestWakeupTimeHours)
+                .withMinute(preferences.latestWakeupTimeMinutes),
+            tomorrowsDetails.sunriseTime
+                .withHour(preferences.latestWakeupTimeHours)
+                .withMinute(preferences.latestWakeupTimeMinutes)
+                .minusMinutes(preferences.sleepDurationMinutes),
+            dayDetails[0]
+        )
     }
 }
 
@@ -110,8 +122,23 @@ private fun assertSunriseDetails(
     actualDayDetails: DayDetails
 ) {
     assertAll(
-        { assertEquals(expectedDay, actualDayDetails.day) { "Unexpected day - ${actualDayDetails.day}" } },
-        { assertEquals(expectedWakeUp, actualDayDetails.wakeUp) { "Unexpected wake up - ${actualDayDetails.wakeUp}" } },
-        { assertEquals(expectedSleep, actualDayDetails.sleep) { "Unexpected sleep - ${actualDayDetails.sleep}" } }
+        {
+            assertEquals(
+                expectedDay,
+                actualDayDetails.day
+            ) { "Unexpected day - ${actualDayDetails.day}" }
+        },
+        {
+            assertEquals(
+                expectedWakeUp,
+                actualDayDetails.wakeUp
+            ) { "Unexpected wake up - ${actualDayDetails.wakeUp}" }
+        },
+        {
+            assertEquals(
+                expectedSleep,
+                actualDayDetails.sleep
+            ) { "Unexpected sleep - ${actualDayDetails.sleep}" }
+        }
     )
 }
