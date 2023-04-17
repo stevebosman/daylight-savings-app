@@ -55,6 +55,7 @@ class FirstFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.i("Daylight", "onCreateView")
         _binding = FragmentFirstBinding.inflate(inflater, container, false)
         val view = binding.root
 
@@ -158,6 +159,7 @@ class FirstFragment : Fragment() {
     }
 
     private fun setSunriseSunset(location: Location?) {
+        Log.i("location", "location ${location}")
         val today = ZonedDateTime.now()
         val latitude: Angle = Angle.fromDegrees(location?.latitude ?: 0)
         val longitude: Angle = Angle.fromDegrees(location?.longitude ?: 0)
