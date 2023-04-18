@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/FirstFragment"
-        android:name="uk.co.stevebosman.daylight.FirstFragment"
+        android:name="uk.co.stevebosman.daylight.AllDaysFragment"
         android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
+        tools:layout="@layout/fragment_all_days">
 
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"

@@ -25,7 +25,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import uk.co.stevebosman.angles.Angle
-import uk.co.stevebosman.daylight.databinding.FragmentFirstBinding
+import uk.co.stevebosman.daylight.databinding.FragmentAllDaysBinding
 import uk.co.stevebosman.daylight.day.DayDetailCalculator
 import uk.co.stevebosman.daylight.day.DayDetails
 import uk.co.stevebosman.daylight.day.MoonPhase
@@ -41,10 +41,10 @@ private const val REFRESH_INTERVAL: Long = 5 * 60 * 1000
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class FirstFragment : Fragment() {
+class AllDaysFragment : Fragment() {
     private var locationPermitted: Boolean = true
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
-    private var _binding: FragmentFirstBinding? = null
+    private var _binding: FragmentAllDaysBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -56,7 +56,7 @@ class FirstFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         Log.i("Daylight", "onCreateView")
-        _binding = FragmentFirstBinding.inflate(inflater, container, false)
+        _binding = FragmentAllDaysBinding.inflate(inflater, container, false)
         val view = binding.root
 
         daylightsViews = arrayListOf(
@@ -159,7 +159,7 @@ class FirstFragment : Fragment() {
     }
 
     private fun setSunriseSunset(location: Location?) {
-        Log.i("location", "location ${location}")
+        Log.i("location", "location $location")
         val today = ZonedDateTime.now()
         val latitude: Angle = Angle.fromDegrees(location?.latitude ?: 0)
         val longitude: Angle = Angle.fromDegrees(location?.longitude ?: 0)

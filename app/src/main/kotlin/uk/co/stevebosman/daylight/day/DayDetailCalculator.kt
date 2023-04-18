@@ -1,7 +1,6 @@
 package uk.co.stevebosman.daylight.day
 
 import uk.co.stevebosman.daylight.PreferenceValues
-import uk.co.stevebosman.sunrise.DaylightType
 import uk.co.stevebosman.sunrise.SunriseDetails
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
@@ -15,62 +14,36 @@ class DayDetailCalculator(private val preferences: PreferenceValues) {
         today: SunriseDetails,
         tomorrow: SunriseDetails
     ): DayDetails {
-        val earliestSleepTimeYesterday = calculateEarliestSleepTime(yesterday, preferences)
-        val latestWakeUpTimeToday = calculateLatestWakeupTime(today, preferences)
-        val earliestSleepTimeToday = calculateEarliestSleepTime(today, preferences)
-        val latestWakeUpTimeTomorrow = calculateLatestWakeupTime(tomorrow, preferences)
-        var wakeUp: ZonedDateTime
-        var sleep: ZonedDateTime
-        if (today.sunriseType == DaylightType.POLAR_NIGHT || today.sunriseType == DaylightType.MIDNIGHT_SUN) {
-            wakeUp = latestWakeUpTimeToday
-            sleep = earliestSleepTimeToday
-        } else {
-            wakeUp = today.sunriseTime
-            // is sunrise too close to the earliest sleep time?
-            if (ChronoUnit.MINUTES.between(
-                    earliestSleepTimeYesterday,
-                    wakeUp
-                ) < preferences.sleepDurationMinutes
-            ) {
-                wakeUp = earliestSleepTimeYesterday.plusMinutes(preferences.sleepDurationMinutes)
-            }
+        val idealSleepTimeYesterday = yesterday.earliestSleepTime(preferences)
+        val latestWakeUpTimeToday = today.latestWakeUpTime(preferences)
+        val earliestSleepTimeToday = today.earliestSleepTime(preferences)
+        val idealWakeUpTimeTomorrow = tomorrow.idealWakeUpTime(preferences)
 
-            sleep = today.sunsetTime
-            val tomorrowsWakeUp = earliest(latestWakeUpTimeTomorrow, tomorrow.sunriseTime)
-            if (ChronoUnit.MINUTES.between(
-                    sleep,
-                    tomorrowsWakeUp
-                ) > preferences.sleepDurationMinutes
-            ) {
-                sleep = tomorrowsWakeUp.minusMinutes(preferences.sleepDurationMinutes)
-            }
+        var wakeUp: ZonedDateTime = today.idealWakeUpTime(preferences)
+        if (ChronoUnit.MINUTES.between(
+                idealSleepTimeYesterday,
+                wakeUp
+            ) < preferences.sleepDurationMinutes
+        ) {
+            wakeUp = idealSleepTimeYesterday.plusMinutes(preferences.sleepDurationMinutes)
         }
         if (wakeUp.isAfter(latestWakeUpTimeToday)) {
+            // can be triggered if sleep duration is insufficient between earliest sleep and latest wake
             wakeUp = latestWakeUpTimeToday
         }
+
+        var sleep: ZonedDateTime = earliestSleepTimeToday
+        if (ChronoUnit.MINUTES.between(
+                sleep,
+                idealWakeUpTimeTomorrow
+            ) > preferences.sleepDurationMinutes
+        ) {
+            sleep = idealWakeUpTimeTomorrow.minusMinutes(preferences.sleepDurationMinutes)
+        }
         if (sleep.isBefore(earliestSleepTimeToday)) {
+            // can be triggered if sleep duration is insufficient between earliest sleep and latest wake
             sleep = earliestSleepTimeToday
         }
         return DayDetails(today, wakeUp, sleep)
     }
-
-    private fun earliest(date1: ZonedDateTime, date2: ZonedDateTime): ZonedDateTime {
-        return if (date1.isBefore(date2)) date1 else date2
-    }
-
-    private fun calculateEarliestSleepTime(
-        sunriseDetails: SunriseDetails,
-        preferences: PreferenceValues
-    ): ZonedDateTime {
-        val earliestSleepTime =
-            sunriseDetails.solarNoonTime.withHour(preferences.earliestSleepTimeHours)
-                .withMinute(preferences.earliestSleepTimeMinutes).truncatedTo(ChronoUnit.MINUTES)
-        return if (sunriseDetails.sunsetTime.isAfter(earliestSleepTime)) sunriseDetails.sunsetTime else earliestSleepTime
-    }
-
-    private fun calculateLatestWakeupTime(
-        sunriseDetails: SunriseDetails,
-        preferences: PreferenceValues
-    ) = sunriseDetails.solarNoonTime.withHour(preferences.latestWakeupTimeHours)
-        .withMinute(preferences.latestWakeupTimeMinutes).truncatedTo(ChronoUnit.MINUTES)
 }
