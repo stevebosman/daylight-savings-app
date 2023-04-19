@@ -18,13 +18,19 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import com.google.android.gms.location.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import uk.co.stevebosman.angles.Angle
-import uk.co.stevebosman.daylight.databinding.FragmentFirstBinding
+import uk.co.stevebosman.daylight.databinding.FragmentAllDaysBinding
 import uk.co.stevebosman.daylight.day.DayDetailCalculator
 import uk.co.stevebosman.daylight.day.DayDetails
 import uk.co.stevebosman.daylight.day.MoonPhase
 import uk.co.stevebosman.sunrise.DaylightType
+import uk.co.stevebosman.sunrise.calculateSunriseDetails
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -35,10 +41,10 @@ private const val REFRESH_INTERVAL: Long = 5 * 60 * 1000
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class FirstFragment : Fragment() {
+class AllDaysFragment : Fragment() {
     private var locationPermitted: Boolean = true
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
-    private var _binding: FragmentFirstBinding? = null
+    private var _binding: FragmentAllDaysBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -49,7 +55,8 @@ class FirstFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentFirstBinding.inflate(inflater, container, false)
+        Log.i("Daylight", "onCreateView")
+        _binding = FragmentAllDaysBinding.inflate(inflater, container, false)
         val view = binding.root
 
         daylightsViews = arrayListOf(
@@ -152,20 +159,37 @@ class FirstFragment : Fragment() {
     }
 
     private fun setSunriseSunset(location: Location?) {
-        val latitude: Angle = Angle.fromDegrees(location?.latitude ?: 0)
-//        val latitude: Angle = Angle.fromDegrees(-84)
-        val longitude: Angle = Angle.fromDegrees(location?.longitude ?: 0)
-//        val longitude: Angle = Angle.fromDegrees(-122)
-
+        Log.i("location", "location $location")
         val today = ZonedDateTime.now()
+        val latitude: Angle = Angle.fromDegrees(location?.latitude ?: 0)
+        val longitude: Angle = Angle.fromDegrees(location?.longitude ?: 0)
+
+//        val today = ZonedDateTime.of(2023,3, 25,12,0,0,0, ZoneId.of("Europe/London"))
+//        val latitude: Angle = Angle.fromDegrees(50)
+//        val longitude: Angle = Angle.fromDegrees(0)
+
+//        val today = ZonedDateTime.of(2023,3, 25,12,0,0,0, ZoneId.of("America/Los_Angeles"))
+//        val latitude: Angle = Angle.fromDegrees(-82)
+//        val longitude: Angle = Angle.fromDegrees(45)
+
+        val sunriseDetails = Array(daylightsViews.size + 2) { i ->
+            calculateSunriseDetails(
+                today.plusDays((i - 1).toLong()),
+                longitude,
+                latitude
+            )
+        }
 
         val dayDetailCalculator = DayDetailCalculator(Preferences(this.requireContext()))
+        val dayDetails = dayDetailCalculator.calculate(sunriseDetails)
 
         daylightsViews.forEachIndexed { i, v ->
-            populateDaylightView(
-                v,
-                dayDetailCalculator.calculate(today.plusDays(i.toLong()), longitude, latitude)
-            )
+            val day = dayDetails[i].day
+            Log.i("Daylight", "*".repeat(10))
+            Log.i("Daylight", "Noon: ${day.solarNoonTime}")
+            Log.i("Daylight", "Sunrise: ${day.sunriseTime}")
+            Log.i("Daylight", "Sunset: ${day.sunsetTime}")
+            populateDaylightView(v, dayDetails[i])
         }
     }
 
@@ -187,23 +211,26 @@ class FirstFragment : Fragment() {
             if (requireContext().resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) " " else "\n"
 
         daylight.sunrise =
-            when (currentDay.daylightType) {
-                DaylightType.MIDNIGHT_SUN -> midnightSunIcon + getString(R.string.polar)
-                DaylightType.POLAR_NIGHT -> polarNightIcon + getString(R.string.polar)
+            when (currentDay.sunriseType) {
+                DaylightType.MIDNIGHT_SUN -> midnightSunIcon + formatDate(currentDay.sunriseTime)
+                DaylightType.POLAR_NIGHT -> polarNightIcon + formatDate(currentDay.sunsetTime)
                 else -> sunriseIcon + formatTime(currentDay.sunriseTime)
             } + timeSeparator + alarmClockIcon + formatTime(dayDetails.wakeUp)
 
         daylight.sunset =
-            when (currentDay.daylightType) {
-                DaylightType.MIDNIGHT_SUN -> midnightSunIcon + getString(R.string.polar)
-                DaylightType.POLAR_NIGHT -> polarNightIcon + getString(R.string.polar)
-                else -> MoonPhase.getIcon(currentDay) + formatTime(currentDay.sunsetTime)
+            MoonPhase.of(currentDay.moonPhase).icon + when (currentDay.sunsetType) {
+                DaylightType.MIDNIGHT_SUN -> formatDate(currentDay.sunsetTime)
+                DaylightType.POLAR_NIGHT -> formatDate(currentDay.sunriseTime)
+                else -> formatTime(currentDay.sunsetTime)
             } + timeSeparator + sleepIcon + formatTime(dayDetails.sleep)
     }
 
-    private fun formatTime(date: ZonedDateTime): String {
-        return date.toLocalTime().plusSeconds(30).truncatedTo(ChronoUnit.MINUTES).format(
+    private fun formatDate(date: ZonedDateTime): String = date.toLocalDate().format(
+        DateTimeFormatter.ofPattern("dd-MMM")
+    )
+
+    private fun formatTime(date: ZonedDateTime): String =
+        date.toLocalTime().plusSeconds(30).truncatedTo(ChronoUnit.MINUTES).format(
             DateTimeFormatter.ofPattern("HH:mm")
         )
-    }
 }
