@@ -7,21 +7,21 @@
             android:defaultValue="@string/default_sleep_duration"
             android:inputType="numberDecimal"
             android:key="@string/preference_sleep_duration"
-            android:summary="@string/sleep_duration_summary"
+            android:dialogMessage="@string/sleep_duration_summary"
             android:title="@string/sleep_duration"
             app:useSimpleSummaryProvider="true" />
         <uk.co.stevebosman.timepreference.TimePreference
             android:id="@+id/latest_wakeup_time"
             android:defaultValue="@string/default_latest_wakeup_time"
             android:key="@string/preference_latest_wakeup_time"
-            android:summary="@string/latest_wakeup_time_summary"
+            android:dialogMessage="@string/latest_wakeup_time_summary"
             android:title="@string/latest_wakeup_time"
             app:useSimpleSummaryProvider="true" />
         <uk.co.stevebosman.timepreference.TimePreference
             android:id="@+id/earliest_sleep_time"
             android:defaultValue="@string/default_earliest_sleep_time"
             android:key="@string/preference_earliest_sleep_time"
-            android:summary="@string/earliest_sleep_time_summary"
+            android:dialogMessage="@string/earliest_sleep_time_summary"
             android:title="@string/earliest_sleep_time"
             app:useSimpleSummaryProvider="true"
             />

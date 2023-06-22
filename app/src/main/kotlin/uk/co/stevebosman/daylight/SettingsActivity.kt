@@ -38,7 +38,8 @@ class SettingsActivity : AppCompatActivity() {
             } else {
                 super.onDisplayPreferenceDialog(preference)
             }
-        }    }
+        }
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
