@@ -21,7 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -31,18 +31,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import uk.co.stevebosman.daylight.activity.ui.theme.MainActivityTheme
 import uk.co.stevebosman.daylight.angles.Angle
-import uk.co.stevebosman.daylight.activity.ui.theme.EmptyActivityTheme
+import uk.co.stevebosman.daylight.formatLatitude
+import uk.co.stevebosman.daylight.formatLongDate
+import uk.co.stevebosman.daylight.formatLongitude
+import uk.co.stevebosman.daylight.formatShortDate
+import uk.co.stevebosman.daylight.formatTime
 import uk.co.stevebosman.daylight.moon.MoonPhase
 import uk.co.stevebosman.daylight.sleepCalculation
 import uk.co.stevebosman.daylight.sunrise.DaylightType
 import uk.co.stevebosman.daylight.sunrise.calculateSunriseDetails
 import uk.co.stevebosman.daylight.wakeCalculation
 import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-import java.time.temporal.ChronoUnit
-import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalFoundationApi::class)
 class MainActivity : ComponentActivity() {
@@ -56,7 +57,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            EmptyActivityTheme {
+            MainActivityTheme {
                 Scaffold(
                     topBar = {
                         TopAppBar(
@@ -105,8 +106,8 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun Dates(modifier: Modifier = Modifier) {
-        var longitude by remember { mutableStateOf(0.0) }
-        var latitude by remember { mutableStateOf(0.0) }
+        var longitude by remember { mutableDoubleStateOf(0.0) }
+        var latitude by remember { mutableDoubleStateOf(0.0) }
         if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 if (location != null) {
@@ -143,20 +144,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    private fun formatLatitude(latitude: Double): String {
-        val direction = (if (latitude < 0) "S" else "N")
-        return formatAngle(latitude) + direction
-    }
-
-    private fun formatLongitude(longitude: Double): String {
-        val direction = (if (longitude < 0) "W" else "E")
-        return formatAngle(longitude) + direction
-    }
-
-    private fun formatAngle(angle: Double): String {
-        return "%,.3f".format(angle.absoluteValue)
     }
 
     @Composable
@@ -239,7 +226,7 @@ class MainActivity : ComponentActivity() {
     @Preview(showBackground = true)
     @Composable
     fun ColumnPreview() {
-        EmptyActivityTheme {
+        MainActivityTheme {
             DateColumn(
                 52.61,
                 -1.92,
@@ -251,7 +238,7 @@ class MainActivity : ComponentActivity() {
     @Preview(showBackground = true)
     @Composable
     fun HomePreview() {
-        EmptyActivityTheme {
+        MainActivityTheme {
             Date(
                 ZonedDateTime.now(),
                 52.61,
@@ -264,7 +251,7 @@ class MainActivity : ComponentActivity() {
     @Preview(showBackground = true)
     @Composable
     fun ArcticPreview() {
-        EmptyActivityTheme {
+        MainActivityTheme {
             Date(ZonedDateTime.now(), 85, -1.92)
         }
     }
@@ -272,21 +259,8 @@ class MainActivity : ComponentActivity() {
     @Preview(showBackground = true)
     @Composable
     fun AntarcticPreview() {
-        EmptyActivityTheme {
+        MainActivityTheme {
             Date(ZonedDateTime.now(), -85, -1.92)
         }
     }
-
-    private fun formatLongDate(date: ZonedDateTime): String = date.toLocalDate().format(
-        DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
-    )
-
-    private fun formatShortDate(date: ZonedDateTime): String = date.toLocalDate().format(
-        DateTimeFormatter.ofPattern("dd-MMM")
-    )
-
-    private fun formatTime(date: ZonedDateTime): String =
-        date.toLocalTime().plusSeconds(30).truncatedTo(ChronoUnit.MINUTES).format(
-            DateTimeFormatter.ofPattern("HH:mm")
-        )
 }

@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "EmptyActivity"
+rootProject.name = "Daylight"
 include(":app")
