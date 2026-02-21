@@ -1,8 +1,17 @@
 package uk.co.stevebosman.daylight.activity
 
 import android.Manifest
+import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Context.NOTIFICATION_SERVICE
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.provider.Settings
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -31,17 +40,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import uk.co.stevebosman.daylight.SleepNotification
 import uk.co.stevebosman.daylight.activity.ui.theme.MainActivityTheme
 import uk.co.stevebosman.daylight.angles.Angle
+import uk.co.stevebosman.daylight.channelID
 import uk.co.stevebosman.daylight.formatLatitude
 import uk.co.stevebosman.daylight.formatLongDate
 import uk.co.stevebosman.daylight.formatLongitude
 import uk.co.stevebosman.daylight.formatShortDate
 import uk.co.stevebosman.daylight.formatTime
+import uk.co.stevebosman.daylight.messageExtra
 import uk.co.stevebosman.daylight.moon.MoonPhase
 import uk.co.stevebosman.daylight.sleepCalculation
 import uk.co.stevebosman.daylight.sunrise.DaylightType
 import uk.co.stevebosman.daylight.sunrise.calculateSunriseDetails
+import uk.co.stevebosman.daylight.titleExtra
 import uk.co.stevebosman.daylight.wakeCalculation
 import java.time.ZonedDateTime
 
@@ -52,7 +65,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestPermissions()
+        requestLocationPermissions()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         enableEdgeToEdge()
 
@@ -72,9 +85,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        createNotificationChannel(this)
     }
 
-    fun requestPermissions() {
+    fun requestLocationPermissions() {
         val locationPermissionRequest = this.registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
@@ -104,10 +118,11 @@ class MainActivity : ComponentActivity() {
         )
     }
 
+
     @Composable
     fun Dates(modifier: Modifier = Modifier) {
-        var longitude by remember { mutableDoubleStateOf(0.0) }
-        var latitude by remember { mutableDoubleStateOf(0.0) }
+        var longitude by remember { mutableDoubleStateOf(0.78667) }
+        var latitude by remember { mutableDoubleStateOf(51.46778) }
         if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 if (location != null) {
@@ -126,17 +141,13 @@ class MainActivity : ComponentActivity() {
         modifier: Modifier
     ) {
         Column {
-//            Text(
-//                text = formatLatitude(latitude) + " " + formatLongitude(longitude),
-//                modifier= Modifier.height(12.dp).fillMaxWidth()
-//            )
             LazyColumn(modifier = modifier) {
                 items(count = 365) { i ->
                     if (i == 0) {
                         Text(text = formatLatitude(latitude) + " " + formatLongitude(longitude))
                     } else {
                         Date(
-                            date = ZonedDateTime.now().withHour(12).plusDays(i.toLong()-1),
+                            offset = i.toLong() - 1,
                             latitude = latitude,
                             longitude = longitude
                         )
@@ -148,11 +159,15 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun Date(
-        date: ZonedDateTime,
+        offset: Long,
         latitude: Number,
         longitude: Number,
         modifier: Modifier = Modifier
     ) {
+        if (offset < 30 && checkNotificationPermissions(this)) {
+            scheduleNotification(offset)
+        }
+        val date = ZonedDateTime.now().withHour(12).plusDays(offset)
         val yesterday =
             calculateSunriseDetails(
                 date.minusDays(1L),
@@ -181,13 +196,21 @@ class MainActivity : ComponentActivity() {
                 else -> formatTime(currentDay.sunsetTime)
             }
 
-        val wake = formatTime(wakeCalculation(yesterday.sunsetTime,
-            currentDay.sunriseTime, currentDay.sunriseType))
-        val sleep = formatTime(sleepCalculation(currentDay.sunsetTime, currentDay.sunsetType, tomorrow.sunriseTime))
+        val wake = formatTime(
+            wakeCalculation(
+                yesterday.sunsetTime,
+                currentDay.sunriseTime, currentDay.sunriseType
+            )
+        )
+        val sleepTime =
+            sleepCalculation(currentDay.sunsetTime, currentDay.sunsetType, tomorrow.sunriseTime)
+        val sleep = formatTime(sleepTime)
 
-        Row(modifier
-            .padding(0.dp, 4.dp)
-            .fillMaxWidth()) {
+        Row(
+            modifier
+                .padding(0.dp, 4.dp)
+                .fillMaxWidth()
+        ) {
             Column(modifier.weight(0.2f)) {
                 Text(
                     text = sunrise,
@@ -240,7 +263,7 @@ class MainActivity : ComponentActivity() {
     fun HomePreview() {
         MainActivityTheme {
             Date(
-                ZonedDateTime.now(),
+                0,
                 52.61,
                 -1.92,
                 Modifier.border(BorderStroke(1.dp, Color.Red))
@@ -252,7 +275,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun ArcticPreview() {
         MainActivityTheme {
-            Date(ZonedDateTime.now(), 85, -1.92)
+            Date(0, 85, -1.92)
         }
     }
 
@@ -260,7 +283,101 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun AntarcticPreview() {
         MainActivityTheme {
-            Date(ZonedDateTime.now(), -85, -1.92)
+            Date(0, -85, -1.92)
         }
     }
+
+    private fun scheduleNotification(offset: Long) {
+        var longitude = 0.78667
+        var latitude = 51.46778
+        if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null) {
+                    longitude = location.longitude
+                    latitude = location.latitude
+                }
+            }
+        }
+
+        val date = ZonedDateTime.now().withHour(12).plusDays(offset)
+        val id = date.year * 1000 + date.dayOfYear
+
+        val currentDay =
+            calculateSunriseDetails(date, Angle.fromDegrees(longitude), Angle.fromDegrees(latitude))
+        val tomorrow =
+            calculateSunriseDetails(
+                date.plusDays(1L),
+                Angle.fromDegrees(longitude),
+                Angle.fromDegrees(latitude)
+            )
+
+        val sleepTime =
+            sleepCalculation(currentDay.sunsetTime, currentDay.sunsetType, tomorrow.sunriseTime)
+        if (sleepTime.isAfter(ZonedDateTime.now())) {
+            Log.d("Daylight", "scheduling notification ${id} for ${sleepTime}")
+            // Create an intent for the Notification BroadcastReceiver
+            val intent = Intent(applicationContext, SleepNotification::class.java)
+
+            // Extract title and message from user input
+            val title = "Continuous DST"
+            val message = "${formatTime(sleepTime)} Boing! Time for bed"
+
+            // Add title and message as extras to the intent
+            intent.putExtra(titleExtra, title)
+            intent.putExtra(messageExtra, message)
+
+            // Create a PendingIntent for the broadcast
+            val pendingIntent = PendingIntent.getBroadcast(
+                applicationContext,
+                id,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+
+            // Get the AlarmManager service
+            val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+
+            // Get the selected time and schedule the notification
+            Log.d("Daylight", "setting alert manager to wakeup at ${sleepTime}")
+            alarmManager.setAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                sleepTime.toEpochSecond() * 1000,
+                pendingIntent
+            )
+        }
+    }
+}
+
+private fun createNotificationChannel(context: Context) {
+    val name = "Continuous DST Notification Channel"
+    val desc = "Notifies user of suggested sleep time"
+    val importance = NotificationManager.IMPORTANCE_DEFAULT
+    val channel = NotificationChannel(channelID, name, importance)
+    channel.description = desc
+
+    // Get the NotificationManager service and create the channel
+    val notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+    notificationManager.createNotificationChannel(channel)
+}
+
+fun checkNotificationPermissions(context: Context): Boolean {
+    // Check if notification permissions are granted
+    val notificationManager =
+        context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+    val isEnabled = notificationManager.areNotificationsEnabled()
+
+    if (!isEnabled) {
+        Log.d("Daylight", "notifications not enabled - ask to enable")
+        // Open the app notification settings if notifications are not enabled
+        val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+        intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+        context.startActivity(intent)
+
+        return false
+    }
+
+    Log.d("Daylight", "notifications enabled")
+    // Permissions are granted
+    return true
 }
