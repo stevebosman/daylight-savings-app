@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -33,6 +34,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -83,7 +85,7 @@ class MainActivity : ComponentActivity() {
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) { innerPadding ->
-                    Ui(Modifier.padding(innerPadding))
+                    Ui(Modifier.padding(innerPadding).padding(horizontal = 16.dp))
                 }
             }
         }
@@ -94,6 +96,17 @@ class MainActivity : ComponentActivity() {
     fun Ui(modifier: Modifier = Modifier) {
         var longitude by remember { mutableDoubleStateOf(0.78667) }
         var latitude by remember { mutableDoubleStateOf(51.46778) }
+        var name by remember { mutableStateOf("Essex") }
+        Geocoder(this).getFromLocation(latitude, longitude, 1) {
+            addresses ->
+                Log.d("Daylight", "Ui: ${addresses.get(0)}")
+                val address = addresses.get(0).getAddressLine(0) ?: ""
+                if (address.contains(',')) {
+                    name = address.substring(address.indexOf(',')+1).trim()
+                } else {
+                    name = address
+                }
+        }
         if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 if (location != null) {
@@ -102,13 +115,13 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        Location(latitude, longitude, modifier.height(30.dp))
+        Location(name, latitude, longitude, modifier.height(30.dp))
         DatesColumn(latitude, longitude, modifier.offset(y=30.dp))
     }
 
     @Composable
-    fun Location(latitude: Double, longitude: Double, modifier: Modifier = Modifier) {
-        Text(text = formatLatitude(latitude) + " " + formatLongitude(longitude), modifier)
+    fun Location(name:String, latitude: Double, longitude: Double, modifier: Modifier = Modifier) {
+        Text(text = "$name (${formatLatitude(latitude)} ${formatLongitude(longitude)})", modifier)
     }
 
     @Composable
