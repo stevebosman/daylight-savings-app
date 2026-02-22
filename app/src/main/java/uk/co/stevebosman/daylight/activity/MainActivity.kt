@@ -22,6 +22,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -81,46 +83,15 @@ class MainActivity : ComponentActivity() {
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) { innerPadding ->
-                    Dates(modifier = Modifier.padding(innerPadding))
+                    Ui(Modifier.padding(innerPadding))
                 }
             }
         }
         createNotificationChannel(this)
     }
 
-    fun requestLocationPermissions() {
-        val locationPermissionRequest = this.registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
-        ) { permissions ->
-            when {
-//                permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
-//                    // Precise location access granted.
-//                }
-                permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                    // Only approximate location access granted.
-                }
-
-                else -> {
-                    // No location access granted.
-                }
-            }
-        }
-
-        // Before you perform the actual permission request, check whether your app
-        // already has the permissions, and whether your app needs to show a permission
-        // rationale dialog. For more details, see Request permissions:
-        // https://developer.android.com/training/permissions/requesting#request-permission
-        locationPermissionRequest.launch(
-            arrayOf(
-//                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-        )
-    }
-
-
     @Composable
-    fun Dates(modifier: Modifier = Modifier) {
+    fun Ui(modifier: Modifier = Modifier) {
         var longitude by remember { mutableDoubleStateOf(0.78667) }
         var latitude by remember { mutableDoubleStateOf(51.46778) }
         if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -131,11 +102,17 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        DateColumn(latitude, longitude, modifier)
+        Location(latitude, longitude, modifier.height(30.dp))
+        DatesColumn(latitude, longitude, modifier.offset(y=30.dp))
     }
 
     @Composable
-    private fun DateColumn(
+    fun Location(latitude: Double, longitude: Double, modifier: Modifier = Modifier) {
+        Text(text = formatLatitude(latitude) + " " + formatLongitude(longitude), modifier)
+    }
+
+    @Composable
+    private fun DatesColumn(
         latitude: Double,
         longitude: Double,
         modifier: Modifier
@@ -143,15 +120,11 @@ class MainActivity : ComponentActivity() {
         Column {
             LazyColumn(modifier = modifier) {
                 items(count = 365) { i ->
-                    if (i == 0) {
-                        Text(text = formatLatitude(latitude) + " " + formatLongitude(longitude))
-                    } else {
                         Date(
-                            offset = i.toLong() - 1,
+                            offset = i.toLong(),
                             latitude = latitude,
                             longitude = longitude
                         )
-                    }
                 }
             }
         }
@@ -250,7 +223,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun ColumnPreview() {
         MainActivityTheme {
-            DateColumn(
+            DatesColumn(
                 52.61,
                 -1.92,
                 Modifier.border(BorderStroke(1.dp, Color.Red))
@@ -287,6 +260,36 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    fun requestLocationPermissions() {
+        val locationPermissionRequest = this.registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            when {
+//                permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+//                    // Precise location access granted.
+//                }
+                permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                    // Only approximate location access granted.
+                }
+
+                else -> {
+                    // No location access granted.
+                }
+            }
+        }
+
+        // Before you perform the actual permission request, check whether your app
+        // already has the permissions, and whether your app needs to show a permission
+        // rationale dialog. For more details, see Request permissions:
+        // https://developer.android.com/training/permissions/requesting#request-permission
+        locationPermissionRequest.launch(
+            arrayOf(
+//                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
+    }
+
     private fun scheduleNotification(offset: Long) {
         var longitude = 0.78667
         var latitude = 51.46778
@@ -314,7 +317,7 @@ class MainActivity : ComponentActivity() {
         val sleepTime =
             sleepCalculation(currentDay.sunsetTime, currentDay.sunsetType, tomorrow.sunriseTime)
         if (sleepTime.isAfter(ZonedDateTime.now())) {
-            Log.d("Daylight", "scheduling notification ${id} for ${sleepTime}")
+            Log.d("Daylight", "scheduling notification $id for $sleepTime")
             // Create an intent for the Notification BroadcastReceiver
             val intent = Intent(applicationContext, SleepNotification::class.java)
 
@@ -338,7 +341,7 @@ class MainActivity : ComponentActivity() {
             val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
 
             // Get the selected time and schedule the notification
-            Log.d("Daylight", "setting alert manager to wakeup at ${sleepTime}")
+            Log.d("Daylight", "setting alert manager to wakeup at $sleepTime")
             alarmManager.setAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
                 sleepTime.toEpochSecond() * 1000,
