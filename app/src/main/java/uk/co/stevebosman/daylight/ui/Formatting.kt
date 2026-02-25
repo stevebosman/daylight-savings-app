@@ -1,4 +1,4 @@
-package uk.co.stevebosman.daylight
+package uk.co.stevebosman.daylight.ui
 
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -17,7 +17,7 @@ fun formatShortDate(date: ZonedDateTime): String = date.toLocalDate().format(
 fun formatTime(date: ZonedDateTime): String =
     date.toLocalTime().plusSeconds(30).truncatedTo(ChronoUnit.MINUTES).format(
         DateTimeFormatter.ofPattern("HH:mm")
-)
+    )
 
 fun formatLatitude(latitude: Double): String {
     val direction = (if (latitude < 0) "S" else "N")

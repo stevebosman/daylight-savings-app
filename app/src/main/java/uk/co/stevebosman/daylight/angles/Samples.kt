@@ -14,5 +14,5 @@ internal fun simplifyExample2(): Angle {
 
 internal fun simplifyExample3(): Angle {
     // Simplifies to -π radians
-    return Angle.fromRadians(3*PI).simplify(-PI, true)
+    return Angle.fromRadians(3 * PI).simplify(-PI, true)
 }

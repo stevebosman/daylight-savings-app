@@ -1,6 +1,10 @@
 package uk.co.stevebosman.daylight.difference.scaling
 
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.ln
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.sqrt
 
 /**
  * Logarithmic change

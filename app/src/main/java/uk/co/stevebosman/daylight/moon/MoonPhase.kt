@@ -9,6 +9,7 @@ enum class MoonPhase(val icon: String) {
     WAXING_GIBBOUS("\uD83C\uDF16"),
     LAST_QUARTER("\uD83C\uDF17"),
     WAXING_CRESCENT("\uD83C\uDF18");
+
     companion object {
         fun of(phaseValue: Double): MoonPhase {
             val phaseCount = entries.size

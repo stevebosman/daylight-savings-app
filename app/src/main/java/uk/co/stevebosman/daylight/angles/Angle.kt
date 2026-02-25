@@ -115,7 +115,10 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
         return if (accuracy == Accuracy.DEGREES) {
             fromDegrees(simplify(degrees, ONE_TURN_DEGREES, start.toDouble(), startInclusive))
         } else {
-            fromRadians(simplify(radians, ONE_TURN_RADIANS, start.toDouble(), startInclusive), accuracy)
+            fromRadians(
+                simplify(radians, ONE_TURN_RADIANS, start.toDouble(), startInclusive),
+                accuracy
+            )
         }
     }
 
@@ -202,8 +205,10 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
         const val ONE_TURN_RADIANS = 2 * PI
         const val ONE_TURN_DEGREES = 360
         val NaN = Angle(Accuracy.MIXED, Double.NaN, Double.NaN)
-        val POSITIVE_INFINITY = Angle(Accuracy.MIXED, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY)
-        val NEGATIVE_INFINITY = Angle(Accuracy.MIXED, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY)
+        val POSITIVE_INFINITY =
+            Angle(Accuracy.MIXED, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY)
+        val NEGATIVE_INFINITY =
+            Angle(Accuracy.MIXED, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY)
 
         private fun simplify(
             v: Double,

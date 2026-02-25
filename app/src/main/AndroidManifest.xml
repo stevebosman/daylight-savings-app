@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Daylight">
         <activity
-            android:name="uk.co.stevebosman.daylight.activity.MainActivity"
+            android:name="uk.co.stevebosman.daylight.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Daylight">
             <intent-filter>
@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <receiver
-            android:name=".SleepNotification"
+            android:name=".notifications.SleepNotification"
             android:enabled="true"/>
     </application>
 

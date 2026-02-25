@@ -1,4 +1,4 @@
-package uk.co.stevebosman.daylight.activity.ui.theme
+package uk.co.stevebosman.daylight.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

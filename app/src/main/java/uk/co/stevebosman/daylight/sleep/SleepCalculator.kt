@@ -1,4 +1,4 @@
-package uk.co.stevebosman.daylight
+package uk.co.stevebosman.daylight.sleep
 
 import uk.co.stevebosman.daylight.sunrise.DaylightType
 import java.time.ZonedDateTime
