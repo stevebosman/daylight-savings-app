@@ -3,10 +3,9 @@ package uk.co.stevebosman.daylight.ui
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
@@ -32,30 +31,33 @@ fun DaylightTimesScreen(
     locationName: String,
     modifier: Modifier = Modifier
 ) {
-    Location(locationName, latitude, longitude, modifier.height(30.dp))
-    DatesColumn(latitude, longitude, modifier.offset(y = 30.dp))
+    Column(modifier) {
+        Location(locationName, latitude, longitude)
+        DatesColumn(latitude, longitude)
+    }
 }
 
 @Composable
 fun Location(name: String, latitude: Double, longitude: Double, modifier: Modifier = Modifier) {
-    Text(text = "$name (${formatLatitude(latitude)} ${formatLongitude(longitude)})", modifier)
+    FlowRow {
+        Text(text = name, modifier)
+        Text(text = "(${formatLatitude(latitude)} ${formatLongitude(longitude)})", modifier)
+    }
 }
 
 @Composable
 private fun DatesColumn(
     latitude: Double,
     longitude: Double,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
-    Column {
-        LazyColumn(modifier = modifier) {
-            items(count = 365) { i ->
-                Date(
-                    offset = i.toLong(),
-                    latitude = latitude,
-                    longitude = longitude
-                )
-            }
+    LazyColumn(modifier = modifier) {
+        items(count = 365) { i ->
+            Date(
+                offset = i.toLong(),
+                latitude = latitude,
+                longitude = longitude
+            )
         }
     }
 }
@@ -148,11 +150,12 @@ fun Date(
 
 @Preview(showBackground = true)
 @Composable
-fun ColumnPreview() {
+fun DaylightTimesScreenPreview() {
     MainActivityTheme {
-        DatesColumn(
+        DaylightTimesScreen(
             52.61,
             -1.92,
+            "Aldridge, Walsall, West Midlands",
             Modifier.border(BorderStroke(1.dp, Color.Red))
         )
     }
