@@ -30,5 +30,5 @@ fun formatLongitude(longitude: Double): String {
 }
 
 fun formatAngle(angle: Double): String {
-    return "%,.3f".format(angle.absoluteValue)
+    return "%,.2f".format(angle.absoluteValue)
 }

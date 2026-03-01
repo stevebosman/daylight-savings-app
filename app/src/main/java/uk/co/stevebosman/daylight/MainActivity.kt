@@ -49,8 +49,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val advanceMinutes = 10
-            var longitude by remember { mutableDoubleStateOf(0.78667) }
-            var latitude by remember { mutableDoubleStateOf(51.46778) }
+            var longitude by remember { mutableDoubleStateOf(0.79) }
+            var latitude by remember { mutableDoubleStateOf(51.47) }
             var name by remember { mutableStateOf("Essex") }
             if (checkNotificationPermissions(this)) {
                 scheduleNotifications(context, advanceMinutes, longitude, latitude)
@@ -68,8 +68,8 @@ class MainActivity : ComponentActivity() {
             if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                     if (location != null) {
-                        longitude = location.longitude
-                        latitude = location.latitude
+                        longitude = (location.longitude * 100).toInt() / 100.0
+                        latitude = (location.latitude * 100).toInt() / 100.0
                         if (checkNotificationPermissions(this)) {
                             scheduleNotifications(context, advanceMinutes, longitude, latitude)
                         }
