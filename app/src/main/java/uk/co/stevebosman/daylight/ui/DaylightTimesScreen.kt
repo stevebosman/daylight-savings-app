@@ -5,8 +5,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uk.co.stevebosman.daylight.angles.Angle
+import uk.co.stevebosman.daylight.model.LocationState
 import uk.co.stevebosman.daylight.moon.MoonPhase
 import uk.co.stevebosman.daylight.sleep.sleepCalculation
 import uk.co.stevebosman.daylight.sleep.wakeCalculation
@@ -26,6 +29,14 @@ import java.time.ZonedDateTime
 
 @Composable
 fun DaylightTimesScreen(
+    state: LocationState,
+    modifier: Modifier = Modifier
+) {
+    DaylightTimesColumn(state.latitude, state.longitude, state.name, modifier)
+}
+
+@Composable
+fun DaylightTimesColumn(
     latitude: Double,
     longitude: Double,
     locationName: String,
@@ -41,6 +52,7 @@ fun DaylightTimesScreen(
 fun Location(name: String, latitude: Double, longitude: Double, modifier: Modifier = Modifier) {
     FlowRow {
         Text(text = name, modifier)
+        Spacer(Modifier.width(8.dp))
         Text(text = "(${formatLatitude(latitude)} ${formatLongitude(longitude)})", modifier)
     }
 }
@@ -150,9 +162,9 @@ fun Date(
 
 @Preview(showBackground = true)
 @Composable
-fun DaylightTimesScreenPreview() {
+fun DaylightTimesColumnPreview() {
     MainActivityTheme {
-        DaylightTimesScreen(
+        DaylightTimesColumn(
             52.61,
             -1.92,
             "Aldridge, Walsall, West Midlands",
